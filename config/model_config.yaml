@@ -1,0 +1,32 @@
+model:
+  n_time: 51
+  rho_grid:
+    min: 0.0
+    max: 2.0
+    step: 0.05
+  optimizer:
+    method: L-BFGS-B
+    initial_path: minimum_jerk_path
+    continuation_initial_path: previous_rho_solution
+    ftol: 1.0e-9
+    maxls: 50
+    maxiter: 500
+  primary_action:
+    alpha: 1.0
+    beta: 0.003
+    potential_scale: 2.0
+    sigma: 0.9
+    competitor_decay: 1.2
+    x_bound: 1.45
+    y_lower: -0.15
+    y_upper: 1.25
+  physical_action_ablation:
+    alpha: 0.08
+    beta: 0.004
+    potential_scale: 2.0
+    sigma: 0.9
+    target_power: 4.0
+    competitor_decay: 1.2
+    x_bound: 1.45
+    y_lower: -0.15
+    y_upper: 1.25

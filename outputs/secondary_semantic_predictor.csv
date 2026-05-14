@@ -1,0 +1,2 @@
+predictor,status,reason,rho_prediction_test,loocv_prediction_test
+independent_secondary_semantic_margin,not_feasible_from_current_repository,"No independent embedding file, second published norm table, or frozen LLM rating table is present in the repository. No secondary semantic numbers were invented.",not_run,not_run

@@ -1,0 +1,9 @@
+{
+  "n_permutations": 5000,
+  "observed_nll_gain": 0.6935596111815392,
+  "null_mean_gain": -0.017758495673132826,
+  "null_sd_gain": 0.07868766147219464,
+  "permutation_p": 0.0001999600079984003,
+  "observed_percentile": 100.0,
+  "n_items_improved_observed": 15
+}

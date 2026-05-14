@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "least-action-mouse"
+version = "0.1.0"
+description = "Least-action-style modeling of response competition in mouse-tracking categorization."
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "pandas",
+    "scipy",
+    "matplotlib",
+    "scikit-learn",
+    "statsmodels",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

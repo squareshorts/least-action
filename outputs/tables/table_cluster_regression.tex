@@ -1,0 +1,15 @@
+\begin{table}[htbp]
+\centering
+\caption{Cluster-resampling tests beyond condition and subject effects.}
+\label{tab:cluster-regression}
+\begin{tabular}{l r r r r}
+\toprule
+Outcome & Predictor & Slope & $p$ & 95\% bootstrap CI \\
+\midrule
+AUC & $\rho_z$ & 0.162 & $<.001$ & [0.155, 0.170] \\
+AUC & Action gap$_z$ & -0.163 & $<.001$ & [-0.170, -0.156] \\
+Response time & Action gap$_z$ & -0.151 & $<.001$ & [-0.263, -0.024] \\
+Response time & Inverse $|$action gap$|_z$ & 0.209 & $<.001$ & [0.095, 0.346] \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,22 @@
+\begin{table}[htbp]
+\centering
+\caption{Fixed numerical settings for the primary action model.}
+\label{tab:numerical-settings}
+\begin{tabular}{l r}
+\toprule
+Quantity & Value \\
+\midrule
+Number of normalized samples, $K$ & 51 \\
+$\rho$ grid & $0,0.05,\ldots,2.00$ \\
+Velocity/deformation weight, $\alpha$ & 1.0 \\
+Acceleration weight, $\beta$ & 0.003 \\
+Target Gaussian width, $\sigma_T$ & not used in primary nested model \\
+Competitor width, $\sigma_C$ & 0.9 \\
+Boundary term, $B(q)$ & 0 inside box constraints, $+\infty$ outside \\
+Optimizer & SciPy L-BFGS-B with analytic gradient \\
+Initial path & minimum jerk; then previous $\rho$ solution \\
+Convergence tolerance & ftol = $10^{-9}$ \\
+Maximum iterations & 500 \\
+\bottomrule
+\end{tabular}
+\end{table}
