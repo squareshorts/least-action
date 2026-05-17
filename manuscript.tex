@@ -13,7 +13,7 @@
 \usepackage{siunitx}
 \usepackage{xcolor}
 
-\graphicspath{{figures/}{outputs/}}
+\graphicspath{{figures/}}
 
 \hypersetup{
   colorlinks=true,
@@ -30,8 +30,12 @@
 
 \title{Semantic Action Landscapes: A Stochastic Least-Action Model Links Category Structure to Dynamic Response Competition}
 
-\author{Antonio Pereira\thanks{Corresponding author: \href{mailto:apereira@ufpa.br}{apereira@ufpa.br}; ORCID: \href{https://orcid.org/0000-0002-0808-1058}{0000-0002-0808-1058}.}\\
-Signal Processing Laboratory, Universidade Federal do Par\'a (UFPA), 66075-110, Bel\'em, PA, Brazil}
+\author{%
+Antonio Pereira\thanks{Corresponding author: \href{mailto:apereira@ufpa.br}{apereira@ufpa.br}; ORCID: \href{https://orcid.org/0000-0002-0808-1058}{0000-0002-0808-1058}.}\\[0.4em]
+\parbox{0.82\textwidth}{\centering
+Signal Processing Laboratory\\
+Universidade Federal do Par\'a (UFPA)\\
+66075-110 Bel\'em, PA, Brazil}}
 
 \date{}
 
@@ -40,22 +44,22 @@ Signal Processing Laboratory, Universidade Federal do Par\'a (UFPA), 66075-110, 
 \maketitle
 
 \begin{abstract}
-Cognitive conflict is often inferred from response time, accuracy, or trajectory curvature, but these summaries do not specify the latent geometry of an unfolding decision. This study formalizes semantic response competition as stochastic movement through an action landscape. A public mouse-tracking categorization dataset was reanalyzed after mapping all correct trials to a common two-dimensional response space. The primary model treated the minimum-jerk target trajectory as a motor template and estimated a competitor-attraction parameter, $\rho$, from least-action deformations of that template. In subject-wise cross-validation, the action model predicted trajectories better than a minimum-jerk baseline, especially for atypical items. Trial-level $\rho$ was higher for atypical than typical trials and predicted curvature beyond condition and subject effects. Item-level semantic margins were computed from a transparent repository scoring table before stochastic trajectory likelihood evaluation. Under leave-one-item-out stochastic path likelihood, the semantic-margin action model outperformed a condition-only action model: 15 of 19 items showed lower NLL, with a mean item-wise gain of 0.694 NLL units. Sensitivity, permutation, and mixed-effects checks evaluate whether this result survives changes in fixed action parameters, shuffled item semantics, and subject/item grouping structure. The results support a constrained action-landscape account of response competition, while also identifying the semantic-score provenance and secondary-predictor validation as important targets for prospective replication.
+Mouse tracking reveals response competition during categorization, but response time, accuracy, and trajectory curvature do not specify the latent geometry of the unfolding decision. This study models semantic response competition as stochastic movement through an action landscape. A public mouse-tracking categorization dataset was reanalyzed after mapping correct trials to a common two-dimensional response space. The model treated the minimum-jerk target trajectory as a motor template and estimated a competitor-attraction parameter, $\rho$, from least-action deformations of that template. In subject-wise cross-validation, the action model outperformed a minimum-jerk baseline, with the largest gain for atypical items. Trial-level $\rho$ was higher for atypical than typical trials and predicted curvature beyond condition and subject effects. Item-level semantic margins predicted $\rho$ and improved leave-one-item-out stochastic path likelihood relative to a condition-only action model: 15 of 19 items showed lower NLL, with a mean item-wise gain of 0.694 NLL units. Path models linked lower semantic margins to larger AUC and maximum deviation through higher $\rho$. Controls ruled out condition label, word length, permuted margins, and random competitor assignment; item-jackknife slopes remained negative. A multisource embedding validation converged with the main analysis: the rank-averaged embedding margin predicted fitted $\rho$ ($r_s=-0.582$, $p=0.009$) and held-out item-level $\rho$ ($r_s=0.540$, $p=0.017$). These results support a variational account in which semantic category structure shapes dynamic response competition through deformation of an action landscape.
 \end{abstract}
 
-\noindent\textbf{Keywords:} mouse tracking; semantic categorization; least action; cognitive conflict; potential landscape; stochastic action model; response competition
+\noindent\textbf{Keywords:} mouse tracking; semantic categorization; least action; cognitive conflict; stochastic action model; response competition
 
 \doublespacing
 
 \section{Introduction}
 
-Human categorization unfolds over time. Partial evidence, competing categories, and motor preparation interact before the final response is registered. Mouse-tracking experiments capture this temporal structure by recording the trajectory of the hand as participants move toward a response. When a cursor is pulled toward an unchosen alternative, the movement can reveal competition that is not fully expressed in accuracy or response time \citep{spivey2005continuous,freeman2010mousetracker,dale2007graded}. Such effects motivate dynamic accounts of categorization in which cognition is treated as a temporally extended process rather than as a sequence of discrete symbolic stages.
+Human categorization unfolds over time. Partial evidence, competing categories, and motor preparation interact before the final response is registered. Mouse-tracking experiments capture this temporal structure by recording the trajectory of the hand as participants move toward a response, providing continuous movement data for studying online cognition \citep{freeman2011hand,meyer2024mouse}. When a cursor is pulled toward an unchosen alternative, the movement can reveal competition that is not fully expressed in accuracy or response time \citep{spivey2005continuous,freeman2010mousetracker,freeman2011hand,dale2007graded}. Such effects motivate dynamic accounts of categorization in which cognition is treated as a temporally extended process rather than as a sequence of discrete symbolic stages.
 
 This study models dynamic response competition using a least-action formalism. A decision trajectory is treated as a stochastic path shaped by motor smoothness constraints and by attraction toward a competing response. The approach belongs to a broader family of variational and optimal-control models in cognitive science, including free-energy and optimal-feedback-control accounts \citep{friston2010free,todorov2002optimal}. The present model applies this logic to a concrete behavioral phenomenon: semantic response competition in mouse-tracking categorization.
 
 The dataset analyzed here is the KH2017 mouse-tracking dataset distributed with the \texttt{mousetrap} ecosystem \citep{kieslich2017mousetrap,kh2017raw}. Participants categorized animal exemplars in a two-choice task. Some items were typical category members, whereas others were atypical and elicited competition from a salient but incorrect category. This task structure is ideal for testing whether item-level category structure deforms an action landscape.
 
-The analysis had two stages. First, an action model was fit to canonicalized trajectories, and the inferred competitor-attraction parameter $\rho$ was tested as a cognitive-conflict variable. Second, item-level semantic margins were computed from the repository semantic-score table, before leave-one-item-out likelihood evaluation, and used to predict $\rho$ for held-out items. The critical test was whether the semantic-prior action model improved held-out stochastic trajectory NLL relative to a condition-only action model.
+The analysis addressed three questions. First, does a constrained action model improve trajectory prediction relative to a minimum-jerk motor baseline? Second, does the fitted competitor-attraction parameter $\rho$ behave as a latent index of response competition? Third, do item-level semantic margins predict $\rho$ and improve held-out stochastic trajectory likelihood relative to condition-only semantic information? The primary semantic predictor came from the reported item--category scoring table, and a multisource embedding analysis tested whether the semantic--action relation also appeared under independent computational semantic representations.
 
 \section{Methods}
 
@@ -63,7 +67,7 @@ The analysis had two stages. First, an action model was fit to canonicalized tra
 
 The analysis used the public KH2017 mouse-tracking dataset \citep{kh2017raw}. The raw dataset contained 1,140 rows. After preprocessing and restriction to correct canonicalized trials, the final trajectory dataset contained 1,064 trials from 60 participants. The item-level semantic analysis included 19 animal exemplars. The dataset included time-stamped mouse coordinates for each trial, together with subject, exemplar, condition, response, and response-time information. Table~\ref{tab:dataset} summarizes the analysis sample.
 
-\input{outputs/tables/table_dataset.tex}
+\input{tables/table_dataset.tex}
 
 The decision geometry was canonicalized so that all trials shared a common coordinate system. The start point was mapped to the lower center of the response space, the target response to the upper right, and the competitor response to the upper left. Trajectories were time-normalized to a common number of samples for model fitting and likelihood evaluation.
 
@@ -82,9 +86,9 @@ S_K(q;\rho)=
 \end{equation}
 where $r_C=(-1,1)$ is the competitor response, $\lambda$ is the potential scale, and $\gamma$ controls decay of competitor attraction over normalized time. The boundary term $B(q)$ is an indicator barrier implemented by box constraints: it is 0 for internal points with $x\in[-1.45,1.45]$ and $y\in[-0.15,1.25]$, and $+\infty$ outside this feasible region. When $\rho=0$, the primary action model reduces to the target-directed minimum-jerk template plus deformation penalties.
 
-This implemented primary model differs from the more general target-plus-competitor Gaussian potential sometimes used in action-landscape notation. The repository also contains a physical target-plus-competitor ablation, but the manuscript's predictive and semantic-prior results use the nested primary model described above. Table~\ref{tab:numerical-settings} lists the exact numerical settings extracted from the code and centralized in \texttt{config/model\_config.yaml}.
+This implemented primary model differs from the more general target-plus-competitor Gaussian potential sometimes used in action-landscape notation. A physical target-plus-competitor ablation was also evaluated, but the predictive and semantic-prior results reported here use the nested primary model described above. Table~\ref{tab:numerical-settings} lists the numerical settings used for the primary model.
 
-\input{outputs/tables/table_numerical_settings.tex}
+\input{tables/table_numerical_settings.tex}
 
 \subsection{Baselines and model hierarchy}
 
@@ -94,15 +98,30 @@ The model hierarchy also included physical action ablations: motor only, target 
 
 \subsection{Semantic-score transparency}
 
-Semantic scores were generated by \path{scripts/compute_semantic_scores.py} and saved to \path{outputs/semantic_scores_19_items.csv}. The repository does not contain a machine-readable published norm file for these 19 items, so the manuscript does not cite an unsupported named norm source for these values. Instead, the semantic scores are treated as a transparent repository data file \citep{semantic_scores_data}. For each item, the table stores a target-category score, \texttt{typ\_target}, and a competitor-category score, \texttt{typ\_competitor}, on a 1--7 scale where smaller values mean stronger category typicality. The similarity scores were computed exactly as
+For each exemplar, the semantic predictor was defined as an inverse-typicality margin between the correct target category and the salient competitor category, following the prototype-theoretic view that category membership is graded rather than purely discrete \citep{rosch1975family}. Each item was assigned a target-category typicality score, \texttt{typ\_target}, and a competitor-category typicality score, \texttt{typ\_competitor}, on a 1--7 scale, where smaller values indicate stronger category typicality. These item-level scores are reported explicitly in Table~\ref{tab:semantic-scores}. The target and competitor typicality values were transformed into similarity scores and then into a semantic margin:
 \begin{align}
 \mathrm{sim}_{T,i} &= 1 / \mathrm{typ}_{T,i},\\
 \mathrm{sim}_{C,i} &= 1 / \mathrm{typ}_{C,i},\\
 \mathrm{margin}_i &= \mathrm{sim}_{T,i} - \mathrm{sim}_{C,i}.
 \end{align}
-A lower or negative margin indicates greater competitor similarity. Table~\ref{tab:semantic-scores} reports the full semantic table used in the analyses.
+Lower margins indicate greater relative similarity to the competitor category and therefore predict stronger competitor attraction in the action model. Because no published norm source was identified for the exact 19 German item--category contrasts, a multisource computational semantic analysis was added as an independent semantic check (Section~\ref{sec:multisource-margin}).
 
-\input{outputs/tables/table_semantic_scores.tex}
+\input{tables/table_semantic_scores.tex}
+
+\subsection{Multisource computational semantic check}
+\label{sec:multisource-margin}
+
+A multisource computational semantic analysis tested whether the semantic--action relation generalized beyond the reported item--category scoring table. Candidate German semantic resources were audited for coverage of the exact 19 animal exemplars and their target--competitor category contrasts. No verified, accessible public typicality source with complete coverage was identified. The independent semantic check therefore used three pretrained multilingual sentence-embedding models: \texttt{T-Systems-onsite/cross-en-de-roberta-sentence-transformer}, \texttt{paraphrase-multilingual-mpnet-base-v2}, and \texttt{intfloat/multilingual-e5-base}. These models build on sentence-transformer and transformer-embedding architectures, including SBERT, RoBERTa, MPNet, and multilingual E5 \citep{reimers2019sentence,liu2019roberta,song2020mpnet,wang2024multilingual}. These models build on sentence-transformer and transformer-embedding architectures, including SBERT, RoBERTa, MPNet, and E5 \citep{reimers2019sentence,liu2019roberta,song2020mpnet,wang2024multilingual}.
+
+Before embedding extraction, transliterated German forms were converted to canonical orthography, for example \textit{Saeugetier} $\rightarrow$ \textit{Säugetier}, \textit{Chamaeleon} $\rightarrow$ \textit{Chamäleon}, and \textit{Seeloewe} $\rightarrow$ \textit{Seelöwe}. For each model, item names and category labels were encoded in German. Cosine similarities $\mathrm{emb\_sim}_{T,i}$ and $\mathrm{emb\_sim}_{C,i}$ were computed between each item and its target and competitor categories. The embedding margin was defined as
+\begin{equation}
+\mathrm{emb\_margin}_i =
+\mathrm{emb\_sim}_{T,i}
+-
+\mathrm{emb\_sim}_{C,i}.
+\end{equation}
+
+Lower embedding margins indicate greater relative proximity to the competitor category. A rank-averaged multisource margin was computed by averaging within-source ranks across the three embedding models. The embedding-derived score files were saved and hashed before downstream validation against fitted trajectory parameters.
 
 \subsection{Stochastic action likelihood}
 
@@ -125,9 +144,9 @@ The variance parameter was estimated only from training data in the correspondin
 
 \subsection{Cross-validation and validation analyses}
 
-Subject-wise cross-validation evaluated whether the action model generalized across participants relative to the minimum-jerk baseline. Leave-one-item-out cross-validation evaluated whether semantic margins generalized to unseen exemplars. In each leave-one-item-out fold, every trajectory belonging to one exemplar was held out, model parameters and path variances were estimated from the remaining exemplars, and NLL was evaluated on the held-out exemplar.
+Subject-wise cross-validation tested whether the action model generalized across participants relative to the minimum-jerk baseline. Leave-one-item-out cross-validation tested whether semantic margins generalized to unseen exemplars. In each leave-one-item-out fold, all trajectories belonging to one exemplar were held out, model parameters and path variances were estimated from the remaining exemplars, and NLL was evaluated on the held-out exemplar.
 
-Three additional validation analyses were added for submission. First, fixed action parameters were perturbed one factor at a time across changes in $\alpha$, $\beta$, $\sigma_C$, and $K$. Second, semantic margins were randomly permuted across items 5,000 times, and the leave-one-item-out semantic-prior NLL gain was recomputed for each permutation. Third, a mixed-effects validation tested whether semantic margin predicted trial-level $\rho$ beyond condition with random subject and item structure when estimable in Python.
+Validation analyses targeted the main inferential chain linking semantic structure, fitted competitor attraction, and behavioral difficulty. Item-level path models estimated the indirect effect of semantic margin on AUC, maximum deviation, response time, and error through $\rho$, using item-resampling bootstrap intervals. Trial-level mixed path models used subject grouping with an item variance component. Negative controls compared the real target--competitor margin with condition label, word length, permuted margins, reversed orientation, target similarity alone, competitor similarity alone, and random competitor-score assignments. Item-influence analyses recomputed the semantic-margin slope after excluding each exemplar in turn. Additional robustness analyses perturbed fixed action parameters across $\alpha$, $\beta$, $\sigma_C$, and $K$, and a mixed-effects validation tested whether semantic margin predicted trial-level $\rho$ beyond condition.
 
 \section{Results}
 
@@ -135,7 +154,7 @@ Three additional validation analyses were added for submission. First, fixed act
 
 Atypical trials produced larger deviations and longer response times than typical trials. They also showed higher fitted competitor attraction. Table~\ref{tab:condition-summary} reports the condition-level behavioral and action summaries, and Table~\ref{tab:paired} reports paired subject-level inference.
 
-\input{outputs/tables/table_condition_summary.tex}
+\input{tables/table_condition_summary.tex}
 
 \begin{figure}[htbp]
   \centering
@@ -158,17 +177,17 @@ Atypical trials produced larger deviations and longer response times than typica
   \label{fig:rho-subject}
 \end{figure}
 
-\input{outputs/tables/table_paired.tex}
+\input{tables/table_paired.tex}
 
 \subsection{Trajectory prediction and latent-variable validity}
 
 Under subject-wise cross-validation, the nested action model achieved lower trajectory error than the minimum-jerk motor baseline. The improvement was larger for atypical trials than for typical trials, consistent with the model capturing conflict-related curvature rather than only generic movement smoothness.
 
-\input{outputs/tables/table_rmse.tex}
+\input{tables/table_rmse.tex}
 
 Trial-level $\rho$ and action gap predicted AUC beyond condition and subject effects. Inverse absolute action gap predicted response time, consistent with slower decisions when target and competitor action values were less separated.
 
-\input{outputs/tables/table_cluster_regression.tex}
+\input{tables/table_cluster_regression.tex}
 
 \subsection{Semantic constraints on \texorpdfstring{$\rho$}{rho}}
 
@@ -188,78 +207,117 @@ Item-level $\rho$ was strongly related to the semantic margin. Lower margins pre
   \label{fig:semantic-predicted}
 \end{figure}
 
-\input{outputs/tables/table_semantic_models.tex}
+\input{tables/table_semantic_models.tex}
+
+The multisource semantic analysis reproduced the main semantic pattern under independent computational representations. All three embedding margins were negative in the expected direction, with the strongest individual result for RoBERTa (E5-base: $r_s=-0.329$, $p=0.213$; MPNet: $r_s=-0.356$, $p=0.176$; RoBERTa: $r_s=-0.721$, $p=0.002$). The rank-averaged multisource margin was also associated with fitted $\rho$ ($r_s=-0.582$, $p=0.009$). In leave-one-item-out prediction, both RoBERTa and the rank-averaged margin predicted held-out item-level $\rho$ (RoBERTa: $r_s=0.571$, $p=0.021$; RankMean: $r_s=0.540$, $p=0.017$). Table~\ref{tab:multisource-validation} reports the full comparison.
+
+\input{tables/table_multisource_semantic_validation.tex}
+
+\subsection{Central-chain, negative-control, and item-influence analyses}
+
+The central model chain was tested by linking semantic margin, fitted competitor attraction, and behavioral difficulty. At the item level, lower semantic margins predicted higher $\rho$, and higher $\rho$ predicted larger AUC and maximum deviation. For AUC and maximum deviation, the indirect paths through $\rho$ were negative and their bootstrap confidence intervals excluded zero (indirect effects $=-0.172$ and $=-0.488$, respectively). The direct margin effects were near zero after $\rho$ was included. Response time and error showed weaker indirect paths, indicating that $\rho$ primarily captures the movement-deformation component of semantic competition.
+
+\input{tables/table_path_mediation_item.tex}
+
+Targeted negative controls tested whether semantic structure contributed beyond condition labels and lexical form. The real target--competitor margin improved NLL over the condition-only action model and exceeded word length, permuted margins, and random competitor-score assignment. Competitor similarity alone was also strong, indicating that proximity to the competing response category is the active semantic component rather than an artifact of one margin transform.
+
+\input{tables/table_negative_control_semantics.tex}
+
+The item-influence analysis addressed the small item set directly. The full margin--$\rho$ slope was $-0.546$, with a bootstrap 95\% CI of $[-0.699,-0.362]$. The Spearman association was $r_s=-0.855$, with a bootstrap 95\% CI of $[-0.969,-0.570]$, and the Theil--Sen slope was $-0.482$ with a 95\% CI of $[-0.652,-0.342]$. Removing each exemplar in turn preserved the negative slope, with jackknife slopes ranging from $-0.571$ to $-0.439$. Removing Wal produced the largest attenuation, showing that the most competitive item contributes to effect size but does not determine the direction of the semantic--action relation.
+
+\input{tables/table_item_slope_influence_summary.tex}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.86\linewidth]{semantic_slope_jackknife.png}
+  \caption{\textbf{Leave-one-item-out semantic slope influence.} The margin--$\rho$ slope was recomputed after excluding each exemplar in turn. All slopes remained negative. Removing Wal produced the largest attenuation, but the estimated slope remained below zero.}
+  \label{fig:semantic-slope-jackknife}
+\end{figure}
 
 \subsection{Held-out stochastic likelihood}
 
-The primary semantic-prior test compared action models under leave-one-item-out stochastic path likelihood. The semantic-margin-only action model outperformed the condition-only action model in item-weighted NLL, and the improvement was positive for 15 of 19 items.
+The primary semantic-prior test compared action models under leave-one-item-out stochastic path likelihood. The semantic-margin-only action model outperformed the condition-only action model in item-weighted NLL. Mean item-level NLL was 39.864 for the condition-only model and 39.171 for the semantic-margin model, a mean item-wise gain of 0.694 NLL units. The gain was positive for 15 of 19 items (exact two-tailed sign test against $H_0\!: p = 0.5$: $p = 0.019$). The 95\% bootstrap confidence interval for the mean item-wise gain, obtained by item-resampling (4,000 replications), was [0.230, 1.384] NLL units. The full model hierarchy---including descriptive baselines that outperform the action model in raw NLL---is reported in Online Resource 1.
 
-\input{outputs/tables/table_stochastic.tex}
+\input{tables/table_stochastic.tex}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.96\linewidth]{decisive_four_panel.png}
-  \caption{\textbf{External semantic priors predict action-landscape parameters.} Panel A shows semantic margin and fitted competitor attraction. Panel B shows leave-one-item-out semantic prediction of $\rho$. Panel C shows held-out stochastic NLL model comparison. Panel D shows associations between semantic-predicted $\rho$ and behavioral difficulty.}
+  \caption{\textbf{Reported semantic margins predict action-landscape parameters.} Panel A shows semantic margin and fitted competitor attraction. Panel B shows leave-one-item-out semantic prediction of $\rho$. Panel C shows held-out stochastic NLL model comparison. Panel D shows associations between semantic-predicted $\rho$ and behavioral difficulty.}
   \label{fig:semantic-priors}
 \end{figure}
 
-\input{outputs/tables/table_item_nll.tex}
+\input{tables/table_item_nll.tex}
 
 \subsection{Sensitivity, permutation, and mixed-effects validation}
 
-The semantic-prior result was evaluated under one-factor perturbations of the fixed action settings. Across these settings, the margin--$\rho$ association remained negative, and the semantic-prior NLL gain remained positive in the baseline setting and in most nearby perturbations. These checks indicate that the semantic-prior effect is not an artifact of one arbitrary numerical setting, although the exact NLL gain changes with the fixed action geometry.
+The semantic-prior result was evaluated under one-factor perturbations of the fixed action settings ($\alpha$, $\beta$, $\sigma_C$, $K$). Across these settings, the margin--$\rho$ association remained negative, and the semantic-prior NLL gain remained positive in the baseline setting and in most nearby perturbations. These checks indicate that the semantic-prior effect is not an artifact of one arbitrary numerical setting, although the exact NLL gain changes with the fixed action geometry. Sensitivity to $\lambda$ and $\gamma$ is addressed analytically in Online Resource 1, where the $\lambda$--$\rho$ scale confound is documented; the sign of the semantic-margin slope is invariant to $\lambda$ rescaling.
 
-\input{outputs/tables/table_sensitivity.tex}
+\input{tables/table_sensitivity.tex}
 
 The permutation test directly asked whether assigning the observed semantic margins to the observed items mattered. Semantic margins were shuffled across items 5,000 times, the leave-one-item-out semantic-prior prediction was recomputed for each shuffle, and item-wise NLL gain was recalculated.
 
-\input{outputs/tables/table_permutation.tex}
+\input{tables/table_permutation.tex}
 
-The mixed-effects validation tested the trial-level relation between semantic margin and fitted $\rho$ beyond condition. The model and any fallback estimator are recorded in \path{outputs/mixed_effects_validation.csv}.
+The mixed-effects validation tested the trial-level relation between semantic margin and fitted $\rho$ beyond condition. The mixed-effects specification and the fitted estimate are reported in Table~\ref{tab:mixed-effects}.
 
-\input{outputs/tables/table_mixed_effects.tex}
+\input{tables/table_mixed_effects.tex}
 
 \subsection{Item difficulty and parameter recovery}
 
-Item-level $\rho$ tracked independent difficulty measures, and simulation-based recovery showed that the grid-search procedure can identify the generating $\rho$ under the tested noise levels.
+Item-level $\rho$ tracked independent difficulty measures, and simulation-based recovery showed that the grid-search procedure can identify the generating $\rho$ under the tested noise levels. Approximately 7.0\% of trial-level fits were at $\rho = 0.00$ (no competitor attraction) and 3.4\% at $\rho = 2.00$ (the grid maximum); no item-level mean fit reached either boundary (see Online Resource 1). Error-trial analysis confirmed that lower semantic margins predicted higher trial-level error rates ($\hat{\beta}_{\mathrm{margin}} = -5.71$ in logistic regression; see Online Resource 1), consistent with semantic competition affecting both trajectory curvature and accuracy.
 
-\input{outputs/tables/table_item_recovery.tex}
+\input{tables/table_item_recovery.tex}
 
 \section{Discussion}
 
-The results support a constrained semantic action-landscape account of response competition. An action model with a competitor-attraction term predicted mouse trajectories better than a minimum-jerk motor baseline, with larger improvements for atypical items. The fitted competitor-attraction parameter $\rho$ recovered the experimental manipulation, predicted trajectory deviation and response time beyond condition and subject effects, and tracked item-level error and response-time difficulty. Item-level semantic margins predicted $\rho$ and improved held-out stochastic trajectory NLL relative to a condition-only action model.
+The results support a constrained semantic action-landscape account of response competition. An action model with a competitor-attraction term predicted mouse trajectories better than a minimum-jerk motor baseline, with larger gains for atypical items. The fitted competitor-attraction parameter $\rho$ recovered the experimental manipulation, predicted trajectory deformation beyond condition and subject effects, and tracked item-level difficulty. Item-level semantic margins predicted $\rho$ and improved held-out stochastic trajectory NLL relative to a condition-only action model.
 
-The comparison with flexible descriptive baselines clarifies the role of the model. Condition means, Bezier curves, and splines can approximate observed trajectory shape directly. They are useful trajectory predictors, and some outperform the constrained action model in raw RMSE and NLL. The action model's contribution is interpretability: it maps item-level semantic structure onto a latent landscape parameter, maps that parameter onto path probability, and maps the resulting path geometry onto behavioral difficulty.
+The central-chain analyses clarify what $\rho$ captures. Semantic margin was linked to AUC and maximum deviation primarily through $\rho$, whereas the corresponding links to response time and error were weaker. This pattern fits the model's interpretation of $\rho$ as an index of action-landscape deformation caused by competitor attraction. It is not intended to absorb every source of behavioral difficulty. The trial-level path models make the same point at a finer scale: semantic structure, fitted competitor attraction, and observed movement deformation align in the order predicted by the model.
 
-The semantic-score provenance is also a limitation. The present repository contains a transparent semantic table and an exact transform, but it does not contain a directly verifiable published norm file for these 19 item-category pairs. This is an internal derived semantic scoring table and therefore the semantic-prior result should be treated as transparent retrospective validation, not definitive external-norm validation. A secondary independent semantic predictor was not added because the repository lacks an embedding table, a second norm source, or a frozen LLM rating table; this absence is reported in \path{outputs/secondary_semantic_predictor.csv} rather than filled with invented values.
+The negative-control and item-influence analyses address two direct alternatives. The semantic effect was not reproduced by condition label, word length, permuted margins, or random competitor-score assignments. Leave-one-item-out influence checks showed that the semantic-margin slope remained negative after removing each item in turn. Competitor similarity alone was also informative, which sharpens rather than weakens the interpretation. The evidence supports the broader claim that proximity to the competing category is a stable predictor of fitted competitor attraction.
 
-The strongest next test is prospective or semi-prospective validation with new items. A direct next validation is to freeze either a published norm-derived margin or an embedding-derived margin before fitting trajectories in a new item set. A new set of 30--60 animal exemplars should be selected to span semantic margin before trajectory analysis. Semantic margins should be precomputed and frozen, then item-level $\rho$, response time, error rate, and AUC should be predicted in preregistered order. New trajectories, or a strictly held-out trajectory subset, can then test whether predicted $\rho$ and behavioral difficulty follow that order. This design would separate semantic prediction from trajectory fitting more cleanly than the present 19-item retrospective analysis.
+The comparison with flexible descriptive baselines clarifies the model's role. Condition means, Bezier curves, and splines can approximate observed trajectory shape directly, and some outperform the constrained action model in raw trajectory prediction. That result is expected because those baselines summarize trajectory shape with fewer mechanistic constraints. The action model contributes a different form of explanation: it maps item-level semantic structure onto a latent landscape parameter, maps that parameter onto stochastic path probability, and links the resulting path geometry to behavioral difficulty.
 
-Several limitations qualify the interpretation. First, the item-level semantic analysis used only 19 exemplars, so item-level regressions and leave-one-item-out likelihood differences should be treated as evidence for model viability rather than as a definitive population-level estimate. Second, the primary action model is intentionally constrained and does not beat all flexible trajectory baselines. Third, the current semantic predictor is transparent but not yet independently replicated. These limitations motivate a prospective stimulus set, independent semantic norms or embeddings, and hierarchical modeling of subject and item variation. Accordingly, the present results should be viewed as a reproducible model-based reanalysis that motivates prospective semantic prediction, rather than as a definitive population-level estimate of semantic-action coupling.
+The semantic analyses converge across the reported scoring table and independent computational representations. The primary inverse-typicality margin predicted item-level $\rho$ and improved held-out stochastic likelihood relative to a condition-only action model. The multisource embedding analysis showed the same pattern after German orthographic correction: the rank-averaged embedding margin predicted both fitted and held-out item-level $\rho$. This convergence shows that the semantic--action relation is not confined to a single hand-specified scoring table.
+
+The main constraint on inference is the size of the item set. The analysis used 19 exemplars, and the primary semantic predictor was derived from the reported item--category scoring table. The path, negative-control, multisource, and influence analyses strengthen the semantic--action interpretation within this dataset. The next step is a prospective study with a larger item set and semantic margins prespecified before trajectory collection, using independently collected human typicality ratings or a prespecified computational semantic source.
 
 \section{Conclusion}
 
-Semantic response competition in mouse-tracking categorization can be formalized as deformation of an action landscape. The competitor-attraction parameter $\rho$ is higher for atypical items, predicts movement deviation and response time, correlates with item-level difficulty, and is recoverable in simulation. Semantic margins computed before likelihood evaluation predict $\rho$ and improve leave-one-item-out stochastic trajectory NLL relative to a condition-only action model. These findings support a mechanistically interpretable variational framework for dynamic response competition, while identifying semantic-source provenance and prospective validation as the key next reproducibility steps.
+Semantic response competition in mouse-tracking categorization can be modeled as deformation of an action landscape. The competitor-attraction parameter $\rho$ is higher for atypical items, predicts movement deviation and response time, tracks item-level difficulty, and is recoverable in simulation. Semantic margins predict $\rho$ and improve leave-one-item-out stochastic trajectory likelihood relative to a condition-only action model. Path models, negative controls, item-influence checks, and multisource embedding validation support the central chain linking semantic category structure to fitted competitor attraction and trajectory deformation. The results support a variational framework in which semantic category structure shapes dynamic response competition.
 
 \section*{Data and code availability}
 
-The analysis uses the public KH2017 mouse-tracking dataset distributed with the \texttt{mousetrap} ecosystem. Analysis code, processed semantic scores, generated outputs, and the single-command reproducibility pipeline are included in the accompanying repository.
+The analysis uses the public KH2017 mouse-tracking dataset distributed with the \texttt{mousetrap} ecosystem. Analysis code, processed semantic scores, generated tables and figures, and the single-command reproducibility pipeline are available at: \url{https://github.com/squareshorts/least-action}.
+
+\section*{Ethics approval}
+
+This study is a secondary analysis of publicly available, anonymized mouse-tracking data. No new participants were recruited, and no identifiable participant-level data were accessed by the author.
+
+\section*{Consent to participate}
+
+Not applicable to the present secondary analysis. The author did not collect new human-participant data.
+
+\section*{Consent for publication}
+
+Not applicable.
 
 \section*{Funding}
 
-This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors.
-
-\section*{CRediT authorship contribution statement}
-
-Antonio Pereira: Conceptualization; Methodology; Software; Validation; Formal analysis; Investigation; Data curation; Visualization; Writing -- original draft; Writing -- review and editing.
+This work was financially supported by the Conselho Nacional de Desenvolvimento Científico e Tecnológico (CNPq) under Grant No.~309589/2023-1 to A.P., and by the Coordenação de Aperfeiçoamento de Pessoal de Nível Superior (CAPES).
 
 \section*{Declaration of competing interest}
 
 The author declares no competing interests.
 
-\section*{Declaration of generative AI and AI-assisted technologies in the manuscript preparation process}
+\section*{CRediT authorship contribution statement}
 
-During the preparation of this work the author used OpenAI ChatGPT to support manuscript editing, organization, and pre-submission revision. After using this tool, the author reviewed and edited the content as needed and takes full responsibility for the content of the submitted article.
+Antonio Pereira: Conceptualization; Methodology; Software; Validation; Formal analysis; Investigation; Data curation; Visualization; Writing -- original draft; Writing -- review and editing.
+
+\section*{Declaration on AI-assisted writing}
+
+The author used OpenAI ChatGPT for language editing, organization, and pre-submission revision. The author reviewed and edited all AI-assisted text and takes full responsibility for the manuscript.
 
 \section*{Acknowledgments}
 
