@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+\centering
+\caption{Model hierarchy under leave-one-item-out stochastic path NLL (all trials). Descriptive baselines directly minimize trajectory error; the action model provides an interpretable semantic-to-landscape mapping at the cost of higher NLL.}
+\label{tab:model-hierarchy}
+\begin{tabular}{lrrr}
+\toprule
+Model & Role & Mean NLL & N \\
+\midrule
+baseline\_condition\_mean & Descriptive baseline & 15.383 & 1064 \\
+bezier\_condition & Descriptive baseline & 26.135 & 1064 \\
+action\_trial\_fitted\_rho & Action model upper bound & 31.386 & 1064 \\
+spline\_condition & Descriptive baseline & 33.612 & 1064 \\
+action\_semantic\_margin\_only\_rho & Action model (semantic-margin $\rho$) & 38.175 & 1064 \\
+action\_condition\_plus\_semantic\_rho & Action model (condition + semantic $\rho$) & 38.219 & 1064 \\
+action\_condition\_only\_rho & Action model (condition-only $\rho$) & 38.813 & 1064 \\
+baseline\_minimum\_jerk & Motor baseline & 44.294 & 1064 \\
+\bottomrule
+\end{tabular}
+\end{table}

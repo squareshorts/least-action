@@ -1,0 +1,32 @@
+\begin{table}[htbp]
+\centering
+\caption{Held-out stochastic likelihood summary and item-level semantic-prior gain.}
+\label{tab:stochastic-likelihood}
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrrr}
+\toprule
+Model & Mean RMSE & Mean NLL & $n$ \\
+\midrule
+\multicolumn{4}{l}{\textit{Panel A. Model-level held-out stochastic NLL}} \\
+Condition mean & 0.341 & 15.383 & 1064 \\
+Bezier condition & 0.411 & 26.135 & 1064 \\
+Spline condition & 0.431 & 33.612 & 1064 \\
+Action: trial-fitted $\rho$ & 0.435 & 31.386 & 1064 \\
+Action: semantic margin $\rho$ & 0.462 & 38.175 & 1064 \\
+Action: condition + semantic $\rho$ & 0.462 & 38.219 & 1064 \\
+Action: condition-only $\rho$ & 0.461 & 38.813 & 1064 \\
+Minimum jerk & 0.480 & 44.294 & 1064 \\
+\midrule
+\multicolumn{4}{l}{\textit{Panel B. Item-level condition-only versus semantic-margin action comparison}} \\
+Statistic & \multicolumn{3}{r}{Value} \\
+Mean NLL: condition-only action & \multicolumn{3}{r}{39.864} \\
+Mean NLL: semantic-margin action & \multicolumn{3}{r}{39.171} \\
+Mean item-wise NLL gain, condition minus semantic & \multicolumn{3}{r}{0.694} \\
+Bootstrap 95\% CI for mean gain & \multicolumn{3}{r}{[0.230, 1.384]} \\
+Items with positive gain & \multicolumn{3}{r}{15 / 19} \\
+Exact sign-test $p$ & \multicolumn{3}{r}{0.0192} \\
+\bottomrule
+\end{tabular}
+}%
+\end{table}

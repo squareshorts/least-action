@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+\centering
+\caption{SWOW-DE margin validation for KH2017 items. The asterisk marks the prespecified main SWOW metric selected before inspecting the $\rho$ association: direct association if coverage is adequate, otherwise network or embedding proximity. Lower margins were expected to predict higher fitted $\rho$.}
+\label{tab:swow-margin-validation}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrrrrrr}
+\toprule
+Metric & Coverage & Spearman $r_s$ & $p$ & Theil--Sen slope & Bootstrap CI & Permutation $p$ \\
+\midrule
+Direct cue-to-response R123 & 11/19 & 0.541 & 0.085 & 0.655 & [-0.048, 8.237] & 0.955 \\
+Reverse category-to-item R123 & 17/19 & -0.256 & 0.321 & -0.601 & [-3.394, 5.741] & 0.164 \\
+Symmetric average R123 & 19/19 & -0.018 & 0.941 & 0.183 & [-1.594, 7.059] & 0.478 \\
+Undirected SWOW shortest-path proximity$^\ast$ & 18/19 & -0.590 & 0.010 & -0.923 & [-1.958, -0.207] & 0.005 \\
+Official SWOW PPMI-SVD embedding cosine & 11/19 & -0.536 & 0.089 & -0.393 & [-0.822, 0.308] & 0.049 \\
+Manuscript inverse-typicality margin & 19/19 & -0.855 & $<.001$ & -0.482 & [-0.656, -0.305] & $<.001$ \\
+Existing multisource transformer rank margin & 19/19 & -0.582 & 0.009 & -0.018 & [-0.042, -0.006] & 0.005 \\
+\bottomrule
+\end{tabular}
+}%
+\end{table}

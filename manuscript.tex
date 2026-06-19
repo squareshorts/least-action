@@ -1,9 +1,9 @@
-\documentclass[11pt]{article}
+\documentclass[11pt,final]{article}
 
 \usepackage[margin=1in]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath,amssymb,amsfonts}
-\usepackage{graphicx}
+\usepackage[final]{graphicx}
 \usepackage{booktabs}
 \usepackage{natbib}
 \usepackage{hyperref}
@@ -13,7 +13,7 @@
 \usepackage{siunitx}
 \usepackage{xcolor}
 
-\graphicspath{{figures/}}
+\graphicspath{{./}{figures/}}
 
 \hypersetup{
   colorlinks=true,
@@ -111,7 +111,7 @@ Lower margins indicate greater relative similarity to the competitor category an
 \subsection{Multisource computational semantic check}
 \label{sec:multisource-margin}
 
-A multisource computational semantic analysis tested whether the semantic--action relation generalized beyond the reported item--category scoring table. Candidate German semantic resources were audited for coverage of the exact 19 animal exemplars and their target--competitor category contrasts. No verified, accessible public typicality source with complete coverage was identified. The independent semantic check therefore used three pretrained multilingual sentence-embedding models: \texttt{T-Systems-onsite/cross-en-de-roberta-sentence-transformer}, \texttt{paraphrase-multilingual-mpnet-base-v2}, and \texttt{intfloat/multilingual-e5-base}. These models build on sentence-transformer and transformer-embedding architectures, including SBERT, RoBERTa, MPNet, and multilingual E5 \citep{reimers2019sentence,liu2019roberta,song2020mpnet,wang2024multilingual}. These models build on sentence-transformer and transformer-embedding architectures, including SBERT, RoBERTa, MPNet, and E5 \citep{reimers2019sentence,liu2019roberta,song2020mpnet,wang2024multilingual}.
+A multisource computational semantic analysis tested whether the semantic--action relation generalized beyond the reported item--category scoring table. Candidate German semantic resources were audited for coverage of the exact 19 animal exemplars and their target--competitor category contrasts. No verified, accessible public typicality source with complete coverage was identified. The independent semantic check therefore used three pretrained multilingual sentence-embedding models: \texttt{T-Systems-onsite/cross-en-de-roberta-sentence-transformer}, \texttt{paraphrase-multilingual-mpnet-base-v2}, and \texttt{intfloat/multilingual-e5-base}. These models build on sentence-transformer and transformer-embedding architectures, including SBERT, RoBERTa, MPNet, and multilingual E5 \citep{reimers2019sentence,liu2019roberta,song2020mpnet,wang2024multilingual}.
 
 Before embedding extraction, transliterated German forms were converted to canonical orthography, for example \textit{Saeugetier} $\rightarrow$ \textit{Säugetier}, \textit{Chamaeleon} $\rightarrow$ \textit{Chamäleon}, and \textit{Seeloewe} $\rightarrow$ \textit{Seelöwe}. For each model, item names and category labels were encoded in German. Cosine similarities $\mathrm{emb\_sim}_{T,i}$ and $\mathrm{emb\_sim}_{C,i}$ were computed between each item and its target and competitor categories. The embedding margin was defined as
 \begin{equation}
@@ -152,9 +152,9 @@ Validation analyses targeted the main inferential chain linking semantic structu
 
 \subsection{Behavioral conflict and competitor attraction}
 
-Atypical trials produced larger deviations and longer response times than typical trials. They also showed higher fitted competitor attraction. Table~\ref{tab:condition-summary} reports the condition-level behavioral and action summaries, and Table~\ref{tab:paired} reports paired subject-level inference.
+Atypical trials produced larger deviations and longer response times than typical trials. They also showed higher fitted competitor attraction. Table~\ref{tab:condition-effects} reports the condition-level behavioral and action summaries and paired subject-level inference. Figure~\ref{fig:trajectory-fit} shows the observed mean trajectories, fitted action paths, and minimum-jerk baseline in canonical response space. Figure~\ref{fig:rho-condition} shows the corresponding trial-level $\rho$ distributions by condition, and Figure~\ref{fig:rho-subject} shows the paired subject-level condition effect.
 
-\input{tables/table_condition_summary.tex}
+\input{tables/table_condition_effects.tex}
 
 \begin{figure}[htbp]
   \centering
@@ -176,8 +176,6 @@ Atypical trials produced larger deviations and longer response times than typica
   \caption{\textbf{Paired subject-level competitor attraction.} Subject-level mean $\rho$ is shown for typical and atypical trials.}
   \label{fig:rho-subject}
 \end{figure}
-
-\input{tables/table_paired.tex}
 
 \subsection{Trajectory prediction and latent-variable validity}
 
@@ -207,11 +205,22 @@ Item-level $\rho$ was strongly related to the semantic margin. Lower margins pre
   \label{fig:semantic-predicted}
 \end{figure}
 
-\input{tables/table_semantic_models.tex}
+The multisource semantic analysis reproduced the main semantic pattern under independent computational representations. All three embedding margins were negative in the expected direction, with the strongest individual result for RoBERTa (E5-base: $r_s=-0.329$, $p=0.213$; MPNet: $r_s=-0.356$, $p=0.176$; RoBERTa: $r_s=-0.721$, $p=0.002$). The rank-averaged multisource margin was also associated with fitted $\rho$ ($r_s=-0.582$, $p=0.009$). In leave-one-item-out prediction, both RoBERTa and the rank-averaged margin predicted held-out item-level $\rho$ (RoBERTa: $r_s=0.571$, $p=0.021$; RankMean: $r_s=0.540$, $p=0.017$). Table~\ref{tab:semantic-validation} reports the primary semantic-prior models and multisource validation in one comparison.
 
-The multisource semantic analysis reproduced the main semantic pattern under independent computational representations. All three embedding margins were negative in the expected direction, with the strongest individual result for RoBERTa (E5-base: $r_s=-0.329$, $p=0.213$; MPNet: $r_s=-0.356$, $p=0.176$; RoBERTa: $r_s=-0.721$, $p=0.002$). The rank-averaged multisource margin was also associated with fitted $\rho$ ($r_s=-0.582$, $p=0.009$). In leave-one-item-out prediction, both RoBERTa and the rank-averaged margin predicted held-out item-level $\rho$ (RoBERTa: $r_s=0.571$, $p=0.021$; RankMean: $r_s=0.540$, $p=0.017$). Table~\ref{tab:multisource-validation} reports the full comparison.
+\input{tables/table_semantic_validation.tex}
 
-\input{tables/table_multisource_semantic_validation.tex}
+\subsection{External visual mouse-tracking validation}
+
+The fitted competitor-attraction parameter generalized to an independent visual mouse-tracking dataset. In the face/object task, face-like objects produced higher stimulus-level fitted $\rho$ than ordinary objects ($\Delta\rho=0.031$, stimulus-cluster 95\% CI $[0.012,0.048]$, permutation $p=0.002$). In the animal/object task, animal-like objects produced a larger increase in fitted $\rho$ relative to ordinary objects ($\Delta\rho=0.154$, stimulus-cluster 95\% CI $[0.103,0.202]$, permutation $p<0.001$). Table~\ref{tab:external-mouse-tracking-validation} reports the external validation results.
+
+\input{tables/table_external_mouse_tracking_validation.tex}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.88\linewidth]{external_rho_by_condition.png}
+  \caption{\textbf{External visual categorization validation.} Stimulus-level fitted competitor attraction $\rho$ is higher for lookalike objects than ordinary objects in independent face/object and animal/object mouse-tracking tasks. Points are stimulus-level means; black markers show condition means with interval estimates.}
+  \label{fig:external-rho-condition}
+\end{figure}
 
 \subsection{Central-chain, negative-control, and item-influence analyses}
 
@@ -223,7 +232,7 @@ Targeted negative controls tested whether semantic structure contributed beyond 
 
 \input{tables/table_negative_control_semantics.tex}
 
-The item-influence analysis addressed the small item set directly. The full margin--$\rho$ slope was $-0.546$, with a bootstrap 95\% CI of $[-0.699,-0.362]$. The Spearman association was $r_s=-0.855$, with a bootstrap 95\% CI of $[-0.969,-0.570]$, and the Theil--Sen slope was $-0.482$ with a 95\% CI of $[-0.652,-0.342]$. Removing each exemplar in turn preserved the negative slope, with jackknife slopes ranging from $-0.571$ to $-0.439$. Removing Wal produced the largest attenuation, showing that the most competitive item contributes to effect size but does not determine the direction of the semantic--action relation.
+The item-influence analysis addressed the small item set directly. The full margin--$\rho$ slope was $-0.546$, with a bootstrap 95\% CI of $[-0.699,-0.362]$. The Spearman association was $r_s=-0.855$, with a bootstrap 95\% CI of $[-0.969,-0.570]$, and the Theil--Sen slope was $-0.482$ with a 95\% CI of $[-0.652,-0.342]$. Removing each exemplar in turn preserved the negative slope, with jackknife slopes ranging from $-0.571$ to $-0.439$. Removing Wal produced the largest attenuation, showing that the most competitive item contributes to effect size but does not determine the direction of the semantic--action relation. Figure~\ref{fig:semantic-slope-jackknife} shows the full leave-one-item-out influence profile.
 
 \input{tables/table_item_slope_influence_summary.tex}
 
@@ -236,9 +245,9 @@ The item-influence analysis addressed the small item set directly. The full marg
 
 \subsection{Held-out stochastic likelihood}
 
-The primary semantic-prior test compared action models under leave-one-item-out stochastic path likelihood. The semantic-margin-only action model outperformed the condition-only action model in item-weighted NLL. Mean item-level NLL was 39.864 for the condition-only model and 39.171 for the semantic-margin model, a mean item-wise gain of 0.694 NLL units. The gain was positive for 15 of 19 items (exact two-tailed sign test against $H_0\!: p = 0.5$: $p = 0.019$). The 95\% bootstrap confidence interval for the mean item-wise gain, obtained by item-resampling (4,000 replications), was [0.230, 1.384] NLL units. The full model hierarchy---including descriptive baselines that outperform the action model in raw NLL---is reported in Online Resource 1.
+The primary semantic-prior test compared action models under leave-one-item-out stochastic path likelihood. The semantic-margin-only action model outperformed the condition-only action model in item-weighted NLL. Mean item-level NLL was 39.864 for the condition-only model and 39.171 for the semantic-margin model, a mean item-wise gain of 0.694 NLL units. The gain was positive for 15 of 19 items (exact two-tailed sign test against $H_0: p = 0.5$, $p = 0.019$). The 95\% bootstrap confidence interval for the mean item-wise gain, obtained by item-resampling (4,000 replications), was [0.230, 1.384] NLL units. Figure~\ref{fig:semantic-priors} summarizes the decisive semantic-prior diagnostics: the fitted semantic--$\rho$ relation, leave-one-item-out prediction of $\rho$, held-out stochastic NLL, and behavioral difficulty associations. Table~\ref{tab:stochastic-likelihood} reports model-level NLL, mean item-wise gain, bootstrap CI, sign-test result, and number of improved items. The full model hierarchy---including descriptive baselines that outperform the action model in raw NLL---is reported in Online Resource 1.
 
-\input{tables/table_stochastic.tex}
+\input{tables/table_stochastic_likelihood.tex}
 
 \begin{figure}[htbp]
   \centering
@@ -246,8 +255,6 @@ The primary semantic-prior test compared action models under leave-one-item-out 
   \caption{\textbf{Reported semantic margins predict action-landscape parameters.} Panel A shows semantic margin and fitted competitor attraction. Panel B shows leave-one-item-out semantic prediction of $\rho$. Panel C shows held-out stochastic NLL model comparison. Panel D shows associations between semantic-predicted $\rho$ and behavioral difficulty.}
   \label{fig:semantic-priors}
 \end{figure}
-
-\input{tables/table_item_nll.tex}
 
 \subsection{Sensitivity, permutation, and mixed-effects validation}
 
@@ -313,7 +320,7 @@ The author declares no competing interests.
 
 \section*{CRediT authorship contribution statement}
 
-Antonio Pereira: Conceptualization; Methodology; Software; Validation; Formal analysis; Investigation; Data curation; Visualization; Writing -- original draft; Writing -- review and editing.
+Antonio Pereira: Conceptualization; Methodology; Software; Validation; Formal analysis; Investigation; Data curation; Visualization; Writing -- original manuscript; Writing -- review and editing.
 
 \section*{Declaration on AI-assisted writing}
 

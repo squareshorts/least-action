@@ -850,16 +850,36 @@ def plot_trajectory_fit(
 
 
 def plot_rho_by_condition(trial_fits: pd.DataFrame, destination: Path) -> None:
-    fig, ax = plt.subplots(figsize=(5.2, 4.2))
+    colors = {"Typical": "#2a9d8f", "Atypical": "#c65a4a"}
+    fig, ax = plt.subplots(figsize=(4.7, 3.9))
     order = ["Typical", "Atypical"]
     values = [trial_fits.loc[trial_fits["condition"] == condition, "rho_hat"] for condition in order]
-    ax.boxplot(values, labels=order, showfliers=False, patch_artist=True)
+    box = ax.boxplot(
+        values,
+        tick_labels=order,
+        showfliers=False,
+        patch_artist=True,
+        widths=0.58,
+        medianprops={"color": "#222222", "linewidth": 1.4},
+        whiskerprops={"color": "#595959", "linewidth": 1.0},
+        capprops={"color": "#595959", "linewidth": 1.0},
+    )
+    for patch, condition in zip(box["boxes"], order):
+        patch.set_facecolor(colors[condition])
+        patch.set_alpha(0.55)
+        patch.set_edgecolor("#333333")
+        patch.set_linewidth(1.0)
     means = [float(v.mean()) for v in values]
-    ax.scatter([1, 2], means, color="#c44536", zorder=3, label="mean")
-    ax.set_ylabel("fitted competitor attraction rho")
-    ax.legend(frameon=False)
+    ax.scatter([1, 2], means, marker="D", s=38, color="#222222", edgecolor="white", linewidth=0.6, zorder=3)
+    ax.set_ylabel(r"Fitted competitor attraction $\rho$", fontsize=11)
+    ax.tick_params(axis="both", labelsize=9.5)
+    ax.margins(x=0.08)
+    ax.grid(axis="y", color="#e7e7e7", linewidth=0.7)
+    ax.set_axisbelow(True)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
     fig.tight_layout()
-    fig.savefig(destination, dpi=180)
+    fig.savefig(destination, dpi=300)
     plt.close(fig)
 
 
@@ -951,8 +971,28 @@ def plot_decisive_four_panel(
     stochastic_nll_summary: pd.DataFrame,
     destination: Path,
 ) -> None:
-    fig, axs = plt.subplots(2, 2, figsize=(10, 8))
-    colors = {"Atypical": "#c44536", "Typical": "#2a9d8f"}
+    fig, axs = plt.subplots(2, 2, figsize=(11.2, 8.6))
+    colors = {"Typical": "#2a9d8f", "Atypical": "#c65a4a"}
+    label_items = {
+        "Wal",
+        "Fledermaus",
+        "Pinguin",
+        "Schmetterling",
+        "Aal",
+        "Klapperschlange",
+        "Hund",
+        "Loewe",
+    }
+    label_offsets = {
+        "Wal": (-24, -12),
+        "Fledermaus": (6, 8),
+        "Pinguin": (8, -18),
+        "Schmetterling": (-54, -4),
+        "Aal": (6, 8),
+        "Klapperschlange": (-72, -2),
+        "Hund": (6, 7),
+        "Loewe": (6, -11),
+    }
     
     df = item_summary.copy()
     if "rho_predicted_semantic" not in df.columns and "item_predictions" in semantic_prior_results:
@@ -963,32 +1003,70 @@ def plot_decisive_four_panel(
     # A: Semantic margin vs fitted rho
     ax = axs[0, 0]
     for cond, cdf in df.groupby("condition"):
-        ax.scatter(cdf["semantic_margin"], cdf["rho_hat"], label=cond, color=colors.get(str(cond), "grey"), alpha=0.8)
+        ax.scatter(
+            cdf["semantic_margin"],
+            cdf["rho_hat"],
+            label=cond,
+            color=colors.get(str(cond), "grey"),
+            alpha=0.9,
+            s=56,
+            edgecolor="white",
+            linewidth=0.5,
+            zorder=3,
+        )
         for _, row in cdf.iterrows():
-            if cond == "Atypical" or row["exemplar"] in ["Hund", "Pferd", "Loewe"]:
-                ax.annotate(" " + row["exemplar"], (row["semantic_margin"], row["rho_hat"]), fontsize=7, alpha=0.7)
+            if row["exemplar"] in label_items:
+                dx, dy = label_offsets.get(row["exemplar"], (5, 4))
+                ax.annotate(
+                    row["exemplar"],
+                    (row["semantic_margin"], row["rho_hat"]),
+                    xytext=(dx, dy),
+                    textcoords="offset points",
+                    fontsize=8,
+                    color="#222222",
+                    alpha=0.9,
+                    bbox=dict(facecolor="white", edgecolor="none", alpha=0.72, pad=0.5),
+                )
     x, y = df["semantic_margin"].to_numpy(), df["rho_hat"].to_numpy()
     if len(np.unique(x)) > 1:
         m, b = np.polyfit(x, y, 1)
         xl = np.linspace(x.min(), x.max(), 10)
-        ax.plot(xl, m*xl + b, 'k--', alpha=0.5)
-    ax.axvline(0, color="grey", ls=":", alpha=0.5)
-    ax.text(-0.08, 1.03, "A", transform=ax.transAxes, fontsize=14, fontweight="bold", va="bottom")
-    ax.set_xlabel("Semantic Margin (Typicality Difference)")
-    ax.set_ylabel("Trial-Fitted Competitor Attraction \u03c1")
+        ax.plot(xl, m * xl + b, color="#555555", lw=1.3, ls="--", alpha=0.75, zorder=2)
+    ax.axvline(0, color="#c7c7c7", ls=":", lw=0.9, zorder=1)
+    ax.set_xlim(x.min() - 0.045, x.max() + 0.06)
+    ax.set_ylim(y.min() - 0.035, y.max() + 0.055)
+    ax.text(-0.10, 1.04, "A", transform=ax.transAxes, fontsize=16, fontweight="bold", va="bottom")
+    ax.set_xlabel("Semantic margin", fontsize=11)
+    ax.set_ylabel(r"Mean fitted $\rho$", fontsize=11)
+    ax.tick_params(axis="both", labelsize=9.5)
+    ax.legend(frameon=False, fontsize=9.5, loc="upper right")
 
     # B: LOOCV Predicted rho vs Fitted rho
     ax = axs[0, 1]
     for cond, cdf in df.groupby("condition"):
         if "rho_predicted_semantic" in cdf.columns:
-            ax.scatter(cdf["rho_predicted_semantic"], cdf["rho_hat"], color=colors.get(str(cond), "grey"), alpha=0.8)
+            ax.scatter(
+                cdf["rho_predicted_semantic"],
+                cdf["rho_hat"],
+                label=cond,
+                color=colors.get(str(cond), "grey"),
+                alpha=0.9,
+                s=56,
+                edgecolor="white",
+                linewidth=0.5,
+                zorder=3,
+            )
     if "rho_predicted_semantic" in df.columns:
         lo = min(df["rho_predicted_semantic"].min(), df["rho_hat"].min()) - 0.05
         hi = max(df["rho_predicted_semantic"].max(), df["rho_hat"].max()) + 0.05
-        ax.plot([lo, hi], [lo, hi], 'k--', alpha=0.5)
-    ax.text(-0.08, 1.03, "B", transform=ax.transAxes, fontsize=14, fontweight="bold", va="bottom")
-    ax.set_xlabel("LOOCV Predicted \u03c1 (from Semantic Prior)")
-    ax.set_ylabel("Trial-Fitted Competitor Attraction \u03c1")
+        ax.plot([lo, hi], [lo, hi], color="#9d9d9d", lw=1.0, ls="--", zorder=1)
+        ax.set_xlim(lo, hi)
+        ax.set_ylim(lo, hi)
+    ax.text(-0.10, 1.04, "B", transform=ax.transAxes, fontsize=16, fontweight="bold", va="bottom")
+    ax.set_xlabel(r"Predicted $\hat{\rho}$ (LOO)", fontsize=11)
+    ax.set_ylabel(r"Observed item-level $\hat{\rho}$", fontsize=11)
+    ax.tick_params(axis="both", labelsize=9.5)
+    ax.set_aspect("equal", adjustable="box")
 
     # C: Stochastic NLL Comparison
     ax = axs[1, 0]
@@ -1012,52 +1090,83 @@ def plot_decisive_four_panel(
     overall = overall.sort_values("model").dropna()
     
     labels = {
-        "baseline_condition_mean": "Condition Mean",
-        "baseline_minimum_jerk": "Minimum Jerk",
-        "bezier_condition": "Bezier (Condition)",
-        "bezier_item": "Bezier (Item)",
-        "spline_condition": "Spline (Condition)",
-        "spline_item": "Spline (Item)",
-        "action_condition_only_rho": "Action (Condition)",
-        "action_semantic_margin_only_rho": "Action (Semantic Prior)",
-        "action_condition_plus_semantic_rho": "Action (Cond+Semantic)",
-        "action_trial_fitted_rho": "Trial Fitted (Upper Bound)"
+        "baseline_condition_mean": "Condition mean",
+        "baseline_minimum_jerk": "Minimum jerk",
+        "bezier_condition": "Bezier condition",
+        "bezier_item": "Bezier item",
+        "spline_condition": "Spline condition",
+        "spline_item": "Spline item",
+        "action_condition_only_rho": "Action: condition",
+        "action_semantic_margin_only_rho": "Action: semantic",
+        "action_condition_plus_semantic_rho": "Action: cond+semantic",
+        "action_trial_fitted_rho": "Action: trial fitted"
     }
     y_pos = np.arange(len(overall))
-    
-    ax.barh(y_pos, overall["mean_nll"], align='center', color="#2b6777", alpha=0.8)
+    bar_colors = []
+    for model in overall["model"].astype(str):
+        if model == "action_semantic_margin_only_rho":
+            bar_colors.append("#2a9d8f")
+        elif model == "action_condition_only_rho":
+            bar_colors.append("#c65a4a")
+        elif model.startswith("action_"):
+            bar_colors.append("#7f9aa3")
+        else:
+            bar_colors.append("#c6c6c6")
+    ax.barh(y_pos, overall["mean_nll"], align="center", color=bar_colors, alpha=0.9)
     ax.set_yticks(y_pos, labels=[labels.get(m, m) for m in overall["model"]])
     ax.invert_yaxis()
-    ax.set_xlabel("Held-out NLL (lower is better)")
-    ax.text(-0.35, 1.03, "C", transform=ax.transAxes, fontsize=14, fontweight="bold", va="bottom")
+    ax.set_xlabel("Held-out NLL (lower is better)", fontsize=11)
+    ax.text(-0.28, 1.04, "C", transform=ax.transAxes, fontsize=16, fontweight="bold", va="bottom")
+    ax.tick_params(axis="x", labelsize=9.5)
+    ax.tick_params(axis="y", labelsize=8.5)
+    for idx, model in enumerate(overall["model"].astype(str)):
+        if model in {"action_condition_only_rho", "action_semantic_margin_only_rho"}:
+            ax.text(
+                overall.iloc[idx]["mean_nll"] + 0.02,
+                idx,
+                f"{overall.iloc[idx]['mean_nll']:.2f}",
+                va="center",
+                fontsize=8.5,
+                color="#222222",
+            )
     
     min_nll = overall["mean_nll"].min()
     max_nll = overall["mean_nll"].max()
     padding = (max_nll - min_nll) * 0.1 if (max_nll - min_nll) > 0 else 1
     ax.set_xlim(min_nll - padding*2, max_nll + padding)
 
-    # D: Predicted Rho vs Behavioral Metric
+    # D: Predicted Rho vs one behavioral metric
     ax = axs[1, 1]
     if "rho_predicted_semantic" in df.columns:
-        ax.scatter(df["rho_predicted_semantic"], df["error_rate"], color="#d96c06", alpha=0.8, label="Error Rate")
-        ax2 = ax.twinx()
-        ax2.scatter(df["rho_predicted_semantic"], df["rt_s"] if "rt_s" in df.columns else df["raw_rt_s"], color="#333333", marker="^", alpha=0.6, label="Response Time (s)")
-        
-        x, y1 = df["rho_predicted_semantic"].to_numpy(), df["error_rate"].to_numpy()
-        m1, b1 = np.polyfit(x, y1, 1)
+        rt_col = "rt_s" if "rt_s" in df.columns else "raw_rt_s"
+        for cond, cdf in df.groupby("condition"):
+            ax.scatter(
+                cdf["rho_predicted_semantic"],
+                cdf[rt_col],
+                color=colors.get(str(cond), "grey"),
+                alpha=0.9,
+                s=56,
+                edgecolor="white",
+                linewidth=0.5,
+                zorder=3,
+            )
+        x = df["rho_predicted_semantic"].to_numpy()
+        y = df[rt_col].to_numpy()
+        m, b = np.polyfit(x, y, 1)
         xl = np.linspace(x.min(), x.max(), 10)
-        ax.plot(xl, m1*xl + b1, color="#d96c06", ls="--", alpha=0.5)
-        
-        y2 = df["rt_s"].to_numpy() if "rt_s" in df.columns else df["raw_rt_s"].to_numpy()
-        m2, b2 = np.polyfit(x, y2, 1)
-        ax2.plot(xl, m2*xl + b2, color="#333333", ls="--", alpha=0.5)
-        
-        ax.text(-0.08, 1.03, "D", transform=ax.transAxes, fontsize=14, fontweight="bold", va="bottom")
-        ax.set_xlabel("LOOCV Predicted \u03c1 (from Semantic Prior)")
-        ax.set_ylabel("Error Rate", color="#d96c06")
-        ax2.set_ylabel("Response Time (s)", color="#333333")
+        ax.plot(xl, m * xl + b, color="#555555", ls="--", lw=1.3, alpha=0.75, zorder=2)
+        ax.text(-0.10, 1.04, "D", transform=ax.transAxes, fontsize=16, fontweight="bold", va="bottom")
+        ax.set_xlabel(r"Predicted $\hat{\rho}$ (LOO)", fontsize=11)
+        ax.set_ylabel("Mean response time (s)", fontsize=11)
+        ax.tick_params(axis="both", labelsize=9.5)
 
-    fig.tight_layout()
+    for ax in axs.flat:
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.grid(axis="y", color="#ececec", linewidth=0.6)
+        ax.set_axisbelow(True)
+
+    fig.tight_layout(pad=1.3, w_pad=2.1, h_pad=2.2)
     fig.savefig(destination, dpi=300, bbox_inches="tight")
     if destination.suffix.lower() == ".png":
         fig.savefig(destination.with_suffix(".pdf"), bbox_inches="tight")

@@ -1,5 +1,6 @@
 __pycache__/
 *.py[cod]
+*.egg-info/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
@@ -8,6 +9,7 @@ venv/
 
 data/raw/*.rda
 data/processed/*.csv
+data/external/**/raw/*.zip
 
 # LaTeX
 *.aux
@@ -22,4 +24,3 @@ data/processed/*.csv
 results/
 outputs/
 submission_bundle/
-

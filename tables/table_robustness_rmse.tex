@@ -1,0 +1,30 @@
+\begin{table}[htbp]
+\centering
+\caption{RMSE-only item-level robustness check (no iid Gaussian assumption required). The condition-only action model had lower item-mean RMSE than the semantic-margin model for 15 of 19 items (sign test against H$_0$: no difference, $p = 0.019$). The NLL gain for 15/19 items under the full stochastic model reflects better variance (\(\tau^2\)) calibration in the leave-one-item-out fold rather than lower raw RMSE.}
+\label{tab:robustness-rmse}
+\begin{tabular}{lrr}
+\toprule
+Item & RMSE gain (Cond--Sem) & Lower RMSE model \\
+\midrule
+Aal & -0.0029 & Condition \\
+Alligator & -0.0031 & Condition \\
+Chamaeleon & -0.0048 & Condition \\
+Falke & -0.0004 & Condition \\
+Fledermaus & -0.0001 & Condition \\
+Goldfisch & -0.0016 & Condition \\
+Hai & -0.0017 & Condition \\
+Hund & 0.0000 & Condition \\
+Kaninchen & -0.0011 & Condition \\
+Katze & 0.0000 & Condition \\
+Klapperschlange & 0.0003 & Semantic \\
+Lachs & -0.0002 & Condition \\
+Loewe & 0.0002 & Semantic \\
+Pferd & 0.0000 & Condition \\
+Pinguin & -0.0047 & Condition \\
+Schmetterling & -0.0039 & Condition \\
+Seeloewe & -0.0088 & Condition \\
+Spatz & 0.0031 & Semantic \\
+Wal & 0.0138 & Semantic \\
+\bottomrule
+\end{tabular}
+\end{table}

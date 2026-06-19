@@ -1,0 +1,31 @@
+\begin{table}[htbp]
+\centering
+\caption{Item-level embedding-derived cosine similarities and semantic margins, alongside the primary inverse-typicality margin and fitted $\hat{\rho}$. Embedding similarities were computed using \texttt{paraphrase-multilingual-MiniLM-L12-v2} and semantic margins were prespecified before trajectory collection (see hash file \texttt{embedding\_freeze\_hash.json}). Items are sorted by embedding margin (ascending).}
+\label{tab:embedding-item-scores}
+\small
+\begin{tabular}{lrrrrrr}
+\toprule
+Item & Condition & Emb sim target & Emb sim competitor & Emb margin & Primary margin & Fitted $\hat{\rho}$ \\
+\midrule
+Pinguin & Atypical & 0.344 & 0.606 & -0.262 & -0.100 & 0.699 \\
+Falke & Typical & 0.329 & 0.561 & -0.232 & 0.379 & 0.439 \\
+Katze & Typical & 0.195 & 0.413 & -0.217 & 0.522 & 0.373 \\
+Aal & Atypical & 0.366 & 0.557 & -0.191 & 0.104 & 0.500 \\
+Schmetterling & Atypical & 0.374 & 0.501 & -0.127 & -0.031 & 0.594 \\
+Kaninchen & Typical & 0.293 & 0.409 & -0.115 & 0.441 & 0.388 \\
+Hai & Typical & 0.313 & 0.396 & -0.083 & 0.348 & 0.446 \\
+Wal & Atypical & 0.295 & 0.334 & -0.039 & -0.298 & 0.983 \\
+Hund & Typical & 0.302 & 0.314 & -0.012 & 0.569 & 0.384 \\
+Fledermaus & Atypical & 0.262 & 0.259 & 0.003 & -0.136 & 0.723 \\
+Seeloewe & Atypical & 0.364 & 0.359 & 0.005 & -0.095 & 0.629 \\
+Pferd & Typical & 0.291 & 0.275 & 0.016 & 0.522 & 0.417 \\
+Lachs & Typical & 0.443 & 0.407 & 0.036 & 0.301 & 0.480 \\
+Spatz & Typical & 0.510 & 0.449 & 0.061 & 0.286 & 0.560 \\
+Alligator & Typical & 0.416 & 0.306 & 0.110 & 0.315 & 0.412 \\
+Chamaeleon & Typical & 0.459 & 0.315 & 0.144 & 0.263 & 0.406 \\
+Klapperschlange & Typical & 0.560 & 0.406 & 0.154 & 0.175 & 0.626 \\
+Loewe & Typical & 0.520 & 0.242 & 0.278 & 0.482 & 0.492 \\
+Goldfisch & Typical & 0.715 & 0.269 & 0.445 & 0.399 & 0.373 \\
+\bottomrule
+\end{tabular}
+\end{table}

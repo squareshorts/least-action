@@ -190,22 +190,46 @@ def semantic_prior_plot(item_summary: pd.DataFrame, results_dir: Path) -> None:
     if len(df) < 4:
         return
 
-    colors = {"Atypical": "#c44536", "Typical": "#2a9d8f"}
+    colors = {"Typical": "#2a9d8f", "Atypical": "#c65a4a"}
+    label_items = {
+        "Wal",
+        "Fledermaus",
+        "Pinguin",
+        "Schmetterling",
+        "Aal",
+        "Klapperschlange",
+        "Hund",
+        "Loewe",
+    }
+    label_offsets = {
+        "Wal": (-24, -12),
+        "Fledermaus": (6, 8),
+        "Pinguin": (8, -18),
+        "Schmetterling": (-56, -4),
+        "Aal": (7, 8),
+        "Klapperschlange": (-72, -2),
+        "Hund": (6, 7),
+        "Loewe": (6, -11),
+    }
 
     # ── Plot 1: rho_hat ~ semantic_margin ────────────────────────────────
-    fig, ax = plt.subplots(figsize=(6.0, 4.8))
+    fig, ax = plt.subplots(figsize=(6.2, 4.6))
     for cond, cdf in df.groupby("condition"):
         ax.scatter(
             cdf["semantic_margin"], cdf["rho_hat"],
             label=cond, color=colors.get(str(cond), "grey"),
-            s=70, alpha=0.85, zorder=3,
+            s=66, alpha=0.9, edgecolor="white", linewidth=0.6, zorder=3,
         )
         for _, row in cdf.iterrows():
+            if row["exemplar"] not in label_items:
+                continue
+            dx, dy = label_offsets.get(row["exemplar"], (5, 4))
             ax.annotate(
                 row["exemplar"],
                 (row["semantic_margin"], row["rho_hat"]),
-                fontsize=7, xytext=(4, 2), textcoords="offset points",
-                color=colors.get(str(cond), "grey"), alpha=0.75,
+                fontsize=8.5, xytext=(dx, dy), textcoords="offset points",
+                color="#222222", alpha=0.9,
+                bbox=dict(facecolor="white", edgecolor="none", alpha=0.72, pad=0.6),
             )
     # Regression line
     x = df["semantic_margin"].to_numpy()
@@ -215,13 +239,18 @@ def semantic_prior_plot(item_summary: pd.DataFrame, results_dir: Path) -> None:
         x_line = np.linspace(x.min(), x.max(), 100)
         ax.plot(x_line, m * x_line + b, color="#555555", lw=1.5, ls="--", zorder=2)
 
-    ax.axvline(0, color="#aaaaaa", lw=0.8, ls=":")
-    ax.set_xlabel("Semantic margin (sim_target - sim_competitor)")
-    ax.set_ylabel("Mean fitted ρ̂ (item level)")
-    ax.legend(frameon=False, fontsize=9)
+    ax.axvline(0, color="#c7c7c7", lw=0.9, ls=":", zorder=1)
+    ax.set_xlim(x.min() - 0.045, x.max() + 0.06)
+    ax.set_ylim(y.min() - 0.035, y.max() + 0.055)
+    ax.set_xlabel("Semantic margin (target similarity - competitor similarity)", fontsize=11)
+    ax.set_ylabel(r"Mean fitted $\rho$", fontsize=11)
+    ax.tick_params(axis="both", labelsize=9.5)
+    ax.legend(frameon=False, fontsize=9.5, loc="upper right")
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
     fig.tight_layout()
     dest1 = results_dir / "semantic_prior_rho.png"
-    fig.savefig(dest1, dpi=180)
+    fig.savefig(dest1, dpi=300)
     plt.close(fig)
     print(f"  -> {dest1}")
 
@@ -234,23 +263,29 @@ def semantic_prior_plot(item_summary: pd.DataFrame, results_dir: Path) -> None:
         preds = pd.DataFrame(result["item_predictions"])
         df = df.merge(preds[["exemplar", "rho_predicted_semantic"]], on="exemplar", how="left")
 
-    fig, ax = plt.subplots(figsize=(5.5, 5.0))
+    fig, ax = plt.subplots(figsize=(5.3, 5.0))
     for cond, cdf in df.groupby("condition"):
         if "rho_predicted_semantic" not in cdf.columns:
             continue
         ax.scatter(
             cdf["rho_predicted_semantic"], cdf["rho_hat"],
             label=cond, color=colors.get(str(cond), "grey"),
-            s=70, alpha=0.85, zorder=3,
+            s=66, alpha=0.9, edgecolor="white", linewidth=0.6, zorder=3,
         )
     lo = min(df["rho_predicted_semantic"].min(), df["rho_hat"].min()) - 0.02
     hi = max(df["rho_predicted_semantic"].max(), df["rho_hat"].max()) + 0.02
-    ax.plot([lo, hi], [lo, hi], color="#aaaaaa", lw=1.0, ls="--", zorder=1)  # identity
-    ax.set_xlabel("ρ̂ predicted (LOOCV, semantic prior)")
-    ax.set_ylabel("ρ̂ observed (trial-level fit)")
-    ax.legend(frameon=False, fontsize=9)
+    ax.plot([lo, hi], [lo, hi], color="#9d9d9d", lw=1.0, ls="--", zorder=1)  # identity
+    ax.set_xlim(lo, hi)
+    ax.set_ylim(lo, hi)
+    ax.set_aspect("equal", adjustable="box")
+    ax.set_xlabel(r"Predicted $\hat{\rho}$ from semantic margin (LOO)", fontsize=11)
+    ax.set_ylabel(r"Observed item-level $\hat{\rho}$", fontsize=11)
+    ax.tick_params(axis="both", labelsize=9.5)
+    ax.legend(frameon=False, fontsize=9.5, loc="upper left")
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
     fig.tight_layout()
     dest2 = results_dir / "semantic_predicted_vs_fitted.png"
-    fig.savefig(dest2, dpi=180)
+    fig.savefig(dest2, dpi=300)
     plt.close(fig)
     print(f"  -> {dest2}")

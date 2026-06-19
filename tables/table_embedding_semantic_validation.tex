@@ -1,0 +1,14 @@
+\begin{table}[htbp]
+\centering
+\caption{Comparison of the primary (inverse-typicality) and secondary (embedding-derived, prespecified) semantic margin predictors. The secondary margin was computed from cosine similarities between German animal names and category labels using a pretrained multilingual sentence-embedding model (\texttt{paraphrase-multilingual-MiniLM-L12-v2}; Reimers \& Gurevych, 2019) and semantic margins were prespecified before trajectory collection. Spearman $r$ (margin vs.\ $\hat{\rho}$): item-level correlation between the semantic margin and fitted competitor attraction. LOOCV Spearman $r$: leave-one-item-out cross-validated prediction of $\hat{\rho}$ from the embedding margin. Spearman $r$ (margin vs.\ NLL gain): correlation between item-level margin and the NLL gain of the semantic-margin over condition-only action model.}
+\label{tab:embedding-semantic-validation}
+\small
+\begin{tabular}{p{4.5cm}rrrr}
+\toprule
+Predictor & Spearman $r$ (margin vs.\ $\hat{\rho}$) & $p$ & LOOCV Spearman $r$ ($\hat{\rho}$) & Spearman $r$ (margin vs.\ NLL gain) \\
+\midrule
+Primary (inverse-typicality, reported) & -0.855 & $<$.001 & --- & -0.180 \\
+Secondary (embedding-derived, prespecified) & -0.118 & 0.632 & -0.465 & 0.068 \\
+\bottomrule
+\end{tabular}
+\end{table}

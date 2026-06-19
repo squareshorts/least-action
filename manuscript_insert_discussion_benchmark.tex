@@ -1,0 +1,7 @@
+% To be inserted in the Discussion section
+
+\subsection{Severe Benchmark and Model-Value Separation}
+
+The evaluation framework separates raw predictive flexibility from mechanistic interpretability: a model's ability to maximize raw path likelihood is evaluated separately from its capacity to identify psychologically meaningful latent variables. As shown in Table~\ref{tab:severe-benchmark}, flexible descriptive baselines such as the condition mean trajectory can achieve high raw path likelihoods by freely fitting the sample curves. However, these baselines fail the mechanistic interpretability and latent-variable validity checks: they do not provide a generative response-competition parameter ($\rho$) or an action-gap quantity.
+
+The constrained action models provide this explanatory mapping. While the condition-only action model establishes a strong mechanistic baseline, the semantic-margin models—including the primary semantic margin and the embedding-rank margins—demonstrate that continuous trajectory deformations can be systematically predicted from the semantic structure of the unchosen competitor category. The pending inclusion of the independent-normed semantic margins will serve as the final out-of-sample stress test against experimenter-degrees-of-freedom. This separation confirms that the stochastic least-action model is not intended merely as an alternative curve-fitter, but as a theory-driven tool for estimating latent competition dynamics from motor outputs.

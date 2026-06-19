@@ -1,0 +1,31 @@
+\begin{table}[htbp]
+\centering
+\caption{Semantic-prior model comparison and multisource semantic validation. LOOCV: leave-one-item-out cross-validation.}
+\label{tab:semantic-validation}
+\small
+\begin{tabular}{llrrr}
+\toprule
+Model & Predictor set & $R^2$ & AIC & Key slope \\
+\midrule
+\multicolumn{5}{l}{\textit{Panel A. Primary reported semantic margin}} \\
+Condition-only & Atypical label & 0.539 & -28.004 & 0.242 \\
+Semantic-margin & Semantic margin & 0.793 & -43.258 & -0.546 \\
+Condition + semantic & Atypical label + semantic margin & 0.808 & -42.681 & -0.691 \\
+\bottomrule
+\end{tabular}
+\vspace{0.5em}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llccccccc}
+\toprule
+Source & Type & Cov. & $r_s$ & $p$ & LOOCV $r_s$ & LOOCV $p$ & RMSE & MAE \\
+\midrule
+\multicolumn{9}{l}{\textit{Panel B. Primary and embedding-based semantic sources}} \\
+Primary (inverse-typicality) & Human rating (retrospective) & 19/19 & -0.855 & $<.001$ & 0.847 & $<.001$ & 0.084 & 0.063 \\
+embedding\_e5base & Computational & 19/19 & -0.274 & 0.2569 & -0.035 & 0.8866 & 0.169 & 0.134 \\
+embedding\_mpnet & Computational & 19/19 & -0.312 & 0.1930 & 0.095 & 0.6997 & 0.168 & 0.136 \\
+embedding\_roberta & Computational & 19/19 & -0.640 & 0.0031 & 0.465 & 0.0449 & 0.154 & 0.124 \\
+Multisource rank-mean & Computational (ensemble) & 19/19 & -0.582 & 0.0089 & 0.540 & 0.0169 & 0.141 & 0.118 \\
+\bottomrule
+\end{tabular}
+}%
+\end{table}

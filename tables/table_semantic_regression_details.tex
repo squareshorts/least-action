@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Item-level semantic regression details for fitted competitor attraction.}
+\label{tab:semantic-regression-details}
+\begin{tabular}{llrlrrrrrrrrr}
+\toprule
+Model & Formula & Intercept & Term & Slope/statistic & SE & 95\% CI & $t$ & $p$ & $R^2$ & Adj. $R^2$ & AIC & $n$ items \\
+\midrule
+fitted $\rho$ $\sim$ atypical label & \texttt{rho\_hat ~ atypical} & 0.446 & atypical label & 0.242 & 0.054 & [0.128, 0.357] & 4.456 & 3.467e-04 & 0.539 & 0.512 & -28.004 & 19 \\
+fitted $\rho$ $\sim$ semantic margin & \texttt{rho\_hat ~ semantic\_margin} & 0.650 & semantic margin & -0.546 & 0.068 & [-0.689, -0.404] & -8.078 & 3.196e-07 & 0.793 & 0.781 & -43.258 & 19 \\
+fitted $\rho$ $\sim$ atypical label + semantic margin & \texttt{rho\_hat ~ atypical + semantic\_margin} & 0.712 & atypical label & -0.087 & 0.078 & [-0.254, 0.079] & -1.116 & 0.2811 & 0.808 & 0.784 & -42.681 & 19 \\
+fitted $\rho$ $\sim$ atypical label + semantic margin & \texttt{rho\_hat ~ atypical + semantic\_margin} & 0.712 & semantic margin & -0.691 & 0.146 & [-0.999, -0.382] & -4.742 & 2.210e-04 & 0.808 & 0.784 & -42.681 & 19 \\
+Pearson correlation & \texttt{rho\_hat vs semantic\_margin} & -- & $r$ & -0.891 & -- & [-0.958, -0.733] & -8.078 & 3.196e-07 & 0.793 & -- & -- & 19 \\
+Spearman correlation & \texttt{rho\_hat vs semantic\_margin} & -- & $\rho_s$ & -0.855 & -- & -- & -- & 3.152e-06 & -- & -- & -- & 19 \\
+\bottomrule
+\end{tabular}
+\end{table}

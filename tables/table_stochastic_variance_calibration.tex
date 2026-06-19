@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Training residual variance and held-out fit for stochastic trajectory likelihood models. Variance entries are mean fold-level $\tau^2$ with range in brackets.}
+\label{tab:stochastic-variance-calibration}
+\begin{tabular}{lrrrrrl}
+\toprule
+Model & Training $\tau^2$ & Residual SD $\tau$ & Held-out RMSE & Held-out NLL & $n$ trials & Variance estimate \\
+\midrule
+condition-only action $\rho$ & 0.1248 [0.1200, 0.1273] & 0.353 & 0.461 & 38.813 & 1064 & by fold and model \\
+semantic-margin action $\rho$ & 0.1231 [0.1190, 0.1255] & 0.351 & 0.462 & 38.175 & 1064 & by fold and model \\
+condition + semantic action $\rho$ & 0.1231 [0.1190, 0.1255] & 0.351 & 0.462 & 38.219 & 1064 & by fold and model \\
+trial-fitted $\rho$ upper bound & 0.1080 [0.1052, 0.1099] & 0.329 & 0.435 & 31.386 & 1064 & by fold and model \\
+minimum jerk & 0.1387 [0.1324, 0.1416] & 0.372 & 0.480 & 44.294 & 1064 & by fold and model \\
+\bottomrule
+\end{tabular}
+\end{table}

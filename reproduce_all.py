@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+import math
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 
@@ -14,6 +16,15 @@ ROOT = Path(__file__).resolve().parent
 OUTPUTS = ROOT / "outputs"
 FIGURES = ROOT / "figures"
 TABLES = OUTPUTS / "tables"
+ROOT_TABLES = ROOT / "tables"
+DEPRECATED_MAIN_TABLES = [
+    "table_condition_summary.tex",
+    "table_paired.tex",
+    "table_semantic_models.tex",
+    "table_multisource_semantic_validation.tex",
+    "table_stochastic.tex",
+    "table_item_nll.tex",
+]
 
 
 def main() -> int:
@@ -36,12 +47,17 @@ def main() -> int:
     run([sys.executable, "analyses/permutation_semantic_prior.py", "--n-permutations", "5000"])
     run([sys.executable, "analyses/mixed_effects_validation.py"])
     run([sys.executable, "analyses/secondary_semantic_predictor.py"])
+    run([sys.executable, "analyses/frozen_multisource_semantic_validation.py"])
 
     summary = read_json(OUTPUTS / "summary.json")
     semantic_scores = write_semantic_scores_19(summary)
     reproducibility_summary = write_reproducibility_summary(summary, semantic_scores)
     copy_figures()
     write_table_files(summary, reproducibility_summary, semantic_scores)
+    remove_deprecated_main_tables()
+    run([sys.executable, "analyses/presubmission_missing_results.py"])
+    run([sys.executable, "analyses/central_chain_validation.py"])
+    remove_deprecated_main_tables()
     return 0
 
 
@@ -146,18 +162,24 @@ def copy_figures() -> None:
 def write_table_files(summary: dict[str, Any], repro: dict[str, Any], semantic_scores: pd.DataFrame) -> None:
     write_dataset_table(repro)
     write_numerical_table()
-    write_condition_table(summary)
+    write_condition_effects_table(summary)
     write_rmse_table()
-    write_paired_table(summary)
     write_cluster_table(summary)
-    write_stochastic_table()
-    write_semantic_models_table(summary)
+    write_stochastic_likelihood_table(summary)
+    write_semantic_validation_table(summary)
     write_semantic_scores_table(semantic_scores)
-    write_item_nll_table(summary)
     write_sensitivity_table()
     write_permutation_table()
     write_mixed_effects_table()
     write_item_recovery_table(summary)
+
+
+def remove_deprecated_main_tables() -> None:
+    for directory in [TABLES, ROOT_TABLES]:
+        for name in DEPRECATED_MAIN_TABLES:
+            path = directory / name
+            if path.exists():
+                path.unlink()
 
 
 def write_dataset_table(repro: dict[str, Any]) -> None:
@@ -203,6 +225,78 @@ def write_condition_table(summary: dict[str, Any]) -> None:
         ("Action gap", fmt(m["Typical"]["action_gap"]), fmt(m["Atypical"]["action_gap"])),
     ]
     table("Condition-level behavioral and action-landscape summaries.", "tab:condition-summary", ["Metric", "Typical", "Atypical"], rows, "table_condition_summary.tex")
+
+
+def write_condition_effects_table(summary: dict[str, Any]) -> None:
+    means = summary["trial_metric_means"]
+    paired = summary["robust_inference"]["paired_subject"]
+    condition_rows = [
+        ("Trials", "744", "320", "--", "--"),
+        ("AUC", fmt(means["Typical"]["auc"]), fmt(means["Atypical"]["auc"]), "--", "--"),
+        (
+            "Maximum deviation",
+            fmt(means["Typical"]["max_deviation"]),
+            fmt(means["Atypical"]["max_deviation"]),
+            "--",
+            "--",
+        ),
+        (
+            "Response time (s)",
+            fmt(means["Typical"]["rt_s"]),
+            fmt(means["Atypical"]["rt_s"]),
+            "--",
+            "--",
+        ),
+        (
+            "Trial-level $\\rho$",
+            fmt(means["Typical"]["rho_hat"]),
+            fmt(means["Atypical"]["rho_hat"]),
+            "--",
+            "--",
+        ),
+        ("Action gap", fmt(means["Typical"]["action_gap"]), fmt(means["Atypical"]["action_gap"]), "--", "--"),
+    ]
+    paired_labels = [
+        ("rho_hat", "$\\rho$"),
+        ("auc", "AUC"),
+        ("max_deviation", "Maximum deviation"),
+        ("rt_s", "Response time (s)"),
+        ("action_gap", "Action gap"),
+    ]
+    paired_rows = []
+    for key, label in paired_labels:
+        val = paired[key]
+        paired_rows.append(
+            (
+                label,
+                fmt(val["typical_mean"]),
+                fmt(val["atypical_mean"]),
+                fmt(val["mean_diff_atypical_minus_typical"]),
+                f"[{fmt(val['bootstrap_ci_95'][0])}, {fmt(val['bootstrap_ci_95'][1])}]",
+            )
+        )
+
+    lines = [
+        "\\begin{table}[htbp]",
+        "\\centering",
+        "\\caption{Condition-level behavioral/action summaries and paired subject-level condition effects.}",
+        "\\label{tab:condition-effects}",
+        "\\begin{tabular}{lrrrr}",
+        "\\toprule",
+        "Metric & Typical & Atypical & Difference & 95\\% bootstrap CI \\\\",
+        "\\midrule",
+        "\\multicolumn{5}{l}{\\textit{Panel A. Condition-level summaries}} \\\\",
+    ]
+    lines.extend(" & ".join(escape(cell) for cell in row) + " \\\\" for row in condition_rows)
+    lines.extend(
+        [
+            "\\midrule",
+            "\\multicolumn{5}{l}{\\textit{Panel B. Paired subject-level inference}} \\\\",
+        ]
+    )
+    lines.extend(" & ".join(escape(cell) for cell in row) + " \\\\" for row in paired_rows)
+    lines.extend(["\\bottomrule", "\\end{tabular}", "\\end{table}", ""])
+    (TABLES / "table_condition_effects.tex").write_text("\n".join(lines), encoding="utf-8")
 
 
 def write_rmse_table() -> None:
@@ -279,6 +373,86 @@ def write_stochastic_table() -> None:
     table("Held-out stochastic model comparison across all trials.", "tab:stochastic", ["Model", "Mean RMSE", "Mean NLL", "$n$"], rows, "table_stochastic.tex")
 
 
+def write_stochastic_likelihood_table(summary: dict[str, Any]) -> None:
+    df = pd.read_csv(OUTPUTS / "stochastic_nll_summary.csv")
+    models = [
+        ("baseline_condition_mean", "Condition mean"),
+        ("bezier_condition", "Bezier condition"),
+        ("spline_condition", "Spline condition"),
+        ("action_trial_fitted_rho", "Action: trial-fitted $\\rho$"),
+        ("action_semantic_margin_only_rho", "Action: semantic margin $\\rho$"),
+        ("action_condition_plus_semantic_rho", "Action: condition + semantic $\\rho$"),
+        ("action_condition_only_rho", "Action: condition-only $\\rho$"),
+        ("baseline_minimum_jerk", "Minimum jerk"),
+    ]
+    model_rows = []
+    for model, label in models:
+        row = df[(df["condition"] == "All") & (df["model"] == model)].iloc[0]
+        model_rows.append((label, fmt(row["mean_rmse"]), fmt(-row["mean_loglik"]), int(row["n"])))
+
+    iw = summary["item_wise_nll"]
+    ci_low, ci_high, sign_p = item_gain_bootstrap_summary()
+    summary_rows = [
+        ("Mean NLL: condition-only action", fmt(iw["mean_nll_condition"])),
+        ("Mean NLL: semantic-margin action", fmt(iw["mean_nll_semantic"])),
+        ("Mean item-wise NLL gain, condition minus semantic", fmt(iw["mean_delta_nll_per_item"])),
+        ("Bootstrap 95\\% CI for mean gain", f"[{fmt(ci_low)}, {fmt(ci_high)}]"),
+        ("Items with positive gain", f"{iw['n_items_positive_gain']} / {iw['n_items_total']}"),
+        ("Exact sign-test $p$", fmtp(sign_p)),
+    ]
+
+    lines = [
+        "\\begin{table}[htbp]",
+        "\\centering",
+        "\\caption{Held-out stochastic likelihood summary and item-level semantic-prior gain.}",
+        "\\label{tab:stochastic-likelihood}",
+        "\\small",
+        "\\resizebox{\\linewidth}{!}{%",
+        "\\begin{tabular}{lrrr}",
+        "\\toprule",
+        "Model & Mean RMSE & Mean NLL & $n$ \\\\",
+        "\\midrule",
+        "\\multicolumn{4}{l}{\\textit{Panel A. Model-level held-out stochastic NLL}} \\\\",
+    ]
+    lines.extend(" & ".join(escape(cell) for cell in row) + " \\\\" for row in model_rows)
+    lines.extend(
+        [
+            "\\midrule",
+            "\\multicolumn{4}{l}{\\textit{Panel B. Item-level condition-only versus semantic-margin action comparison}} \\\\",
+            "Statistic & \\multicolumn{3}{r}{Value} \\\\",
+        ]
+    )
+    lines.extend(f"{escape(stat)} & \\multicolumn{{3}}{{r}}{{{escape(value)}}} \\\\" for stat, value in summary_rows)
+    lines.extend(["\\bottomrule", "\\end{tabular}", "}%", "\\end{table}", ""])
+    (TABLES / "table_stochastic_likelihood.tex").write_text("\n".join(lines), encoding="utf-8")
+
+
+def item_gain_bootstrap_summary() -> tuple[float, float, float]:
+    stoch_trials = pd.read_csv(OUTPUTS / "stochastic_nll_trials.csv")
+    cond_nll = (
+        stoch_trials.loc[stoch_trials["model"] == "action_condition_only_rho"]
+        .groupby("exemplar")["nll"]
+        .mean()
+    )
+    sem_nll = (
+        stoch_trials.loc[stoch_trials["model"] == "action_semantic_margin_only_rho"]
+        .groupby("exemplar")["nll"]
+        .mean()
+    )
+    delta = (cond_nll - sem_nll).dropna().to_numpy()
+    n_items = len(delta)
+    n_pos = int(np.sum(delta > 0))
+    rng = np.random.default_rng(20260515)
+    boot = np.array([rng.choice(delta, n_items, replace=True).mean() for _ in range(4000)])
+    sign_p = two_tailed_binom_p(n_pos, n_items)
+    return float(np.percentile(boot, 2.5)), float(np.percentile(boot, 97.5)), sign_p
+
+
+def two_tailed_binom_p(k: int, n: int) -> float:
+    observed = math.comb(n, k) / (2**n)
+    return min(1.0, sum(math.comb(n, i) / (2**n) for i in range(n + 1) if math.comb(n, i) / (2**n) <= observed))
+
+
 def write_semantic_models_table(summary: dict[str, Any]) -> None:
     models = summary["semantic_prior_results"]["models"]
     rows = [
@@ -288,6 +462,69 @@ def write_semantic_models_table(summary: dict[str, Any]) -> None:
     ]
     formatted = [(name, pred, fmt(val["r2"]), fmt(val["aic"]), fmt(val["params"][term])) for name, pred, val, term in rows]
     table("Item-level semantic-prior models predicting fitted $\\rho$.", "tab:semantic-models", ["Model", "Predictor set", "$R^2$", "AIC", "Key slope"], formatted, "table_semantic_models.tex")
+
+
+def write_semantic_validation_table(summary: dict[str, Any]) -> None:
+    models = summary["semantic_prior_results"]["models"]
+    model_specs = [
+        ("Condition-only", "Atypical label", models["rho_condition"], "atypical"),
+        ("Semantic-margin", "Semantic margin", models["rho_semantic"], "semantic_margin"),
+        ("Condition + semantic", "Atypical label + semantic margin", models["rho_full"], "semantic_margin"),
+    ]
+    model_rows = [
+        (name, pred, fmt(val["r2"]), fmt(val["aic"]), fmt(val["params"][term]))
+        for name, pred, val, term in model_specs
+    ]
+
+    validation_path = OUTPUTS / "semantic_sources" / "multisource_semantic_validation_results.csv"
+    validation = pd.read_csv(validation_path)
+    validation_rows = []
+    for _, row in validation.iterrows():
+        source = str(row["source"]).replace("_", "\\_")
+        source_type = str(row["source_type"])
+        validation_rows.append(
+            (
+                source,
+                source_type,
+                str(row["coverage"]),
+                fmt(row["dir_spearman_r"]),
+                fmtp(row["dir_spearman_p"]),
+                fmt(row["loo_spearman_r"]),
+                fmtp(row["loo_spearman_p"]),
+                fmt(row["rmse"]),
+                fmt(row["mae"]),
+            )
+        )
+
+    lines = [
+        "\\begin{table}[htbp]",
+        "\\centering",
+        "\\caption{Semantic-prior model comparison and multisource semantic validation. LOOCV: leave-one-item-out cross-validation.}",
+        "\\label{tab:semantic-validation}",
+        "\\small",
+        "\\begin{tabular}{llrrr}",
+        "\\toprule",
+        "Model & Predictor set & $R^2$ & AIC & Key slope \\\\",
+        "\\midrule",
+        "\\multicolumn{5}{l}{\\textit{Panel A. Primary reported semantic margin}} \\\\",
+    ]
+    lines.extend(" & ".join(escape(cell) for cell in row) + " \\\\" for row in model_rows)
+    lines.extend(
+        [
+            "\\bottomrule",
+            "\\end{tabular}",
+            "\\vspace{0.5em}",
+            "\\resizebox{\\linewidth}{!}{%",
+            "\\begin{tabular}{llccccccc}",
+            "\\toprule",
+            "Source & Type & Cov. & $r_s$ & $p$ & LOOCV $r_s$ & LOOCV $p$ & RMSE & MAE \\\\",
+            "\\midrule",
+            "\\multicolumn{9}{l}{\\textit{Panel B. Primary and embedding-based semantic sources}} \\\\",
+        ]
+    )
+    lines.extend(" & ".join(escape(cell) for cell in row) + " \\\\" for row in validation_rows)
+    lines.extend(["\\bottomrule", "\\end{tabular}", "}%", "\\end{table}", ""])
+    (TABLES / "table_semantic_validation.tex").write_text("\n".join(lines), encoding="utf-8")
 
 
 def write_semantic_scores_table(semantic_scores: pd.DataFrame) -> None:

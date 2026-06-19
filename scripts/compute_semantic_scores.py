@@ -25,7 +25,7 @@ import pandas as pd
 # ---------------------------------------------------------------------------
 # Repository semantic-score table
 # ---------------------------------------------------------------------------
-# The typ_* values are a transparent 1-7 repository scoring table:
+# The typ_* values are a transparent 1-7 item-category scoring table:
 # 1 = very typical / category-similar, 7 = very atypical / category-dissimilar.
 #
 # Data format (per item):

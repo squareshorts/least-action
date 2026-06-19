@@ -1,10 +1,16 @@
-\documentclass[11pt]{article}
+\documentclass[11pt,final]{article}
 
 \usepackage[margin=1in]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath,amssymb,amsfonts}
-\usepackage{graphicx}
+\usepackage[final]{graphicx}
 \usepackage{booktabs}
+\IfFileExists{adjustbox.sty}{%
+  \usepackage{adjustbox}%
+}{%
+  \newsavebox{\adjustboxfallbackbox}
+  \newenvironment{adjustbox}[1]{\begin{lrbox}{\adjustboxfallbackbox}}{\end{lrbox}\resizebox{\textwidth}{!}{\usebox{\adjustboxfallbackbox}}}
+}
 \usepackage{hyperref}
 \usepackage{caption}
 \usepackage{subcaption}
@@ -12,7 +18,7 @@
 \usepackage{xcolor}
 \usepackage{setspace}
 
-\graphicspath{{figures/}}
+\graphicspath{{./}{figures/}}
 
 \hypersetup{
   colorlinks=true,
@@ -203,6 +209,13 @@ Table~\ref{tab:mixed-effects-details} reports the exact mixed-effects model deta
 Table~\ref{tab:model-hierarchy} reports the full model hierarchy under leave-one-item-out stochastic path NLL. Descriptive baselines, including condition means, Bezier attraction curves, and spline attraction curves, achieve lower NLL than the constrained action model. This is expected because these baselines are optimized to approximate trajectory shape with fewer mechanistic constraints. The action model's contribution is interpretability rather than best raw NLL. The targeted comparison is within the action-model family: whether semantic margin improves the action model relative to condition-only $\rho$. The semantic-margin model achieved a mean item-wise NLL gain of 0.694 units, with positive gain for 15 of 19 items.
 
 \input{tables/table_model_hierarchy.tex}
+
+\section{Severe Benchmark}
+\label{sec:supp-severe-benchmark}
+
+Table~\ref{tab:severe-benchmark} separates raw trajectory prediction from mechanistic interpretability. Flexible descriptive baselines summarize empirical path shape directly. Action models provide fitted competitor attraction and action-gap quantities that can be related to semantic and perceptual competition.
+
+\input{tables/table_severe_benchmark.tex}
 
 \section{Parameter Recovery Expansion}
 \label{sec:supp-recovery}

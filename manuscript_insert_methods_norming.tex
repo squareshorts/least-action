@@ -1,0 +1,7 @@
+% To be inserted in the Methods section
+
+\subsection{Independent Semantic Norming Validation}
+
+To ensure that the primary item-level semantic margins were not an artifact of a single scoring procedure, an independent semantic norming study was designed. A separate sample of German-speaking participants will be recruited to rate the typicality of the 19 animal exemplars against both their target categories and their salient competitor categories on a 1-to-7 scale, matching the structure of the primary analysis. The item presentation sequence includes filler items to disguise the specific target-competitor contrasts.
+
+Following exclusion of participants who fail language proficiency and attention checks, a mixed-effects ordinal or linear model will estimate the mean typicality rating for each item-category pairing, accounting for by-participant and by-item variance: $\text{rating} \sim \text{category\_role} + (1|\text{participant}) + (1|\text{item})$. The independent semantic similarity scores will be computed as the inverse of these mean typicality ratings ($1 / \text{mean\_typicality}$). The independent semantic margin for each item will then be defined as the difference between its target similarity and competitor similarity ($\text{sim}_{\text{target}} - \text{sim}_{\text{competitor}}$). This independent margin will be subjected to the same robust negative-control and leave-one-item-out prediction pipeline as the primary margin.

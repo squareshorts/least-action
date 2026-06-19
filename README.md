@@ -1,6 +1,6 @@
 # Variational Action Models of Response Competition
 
-**Public Repository:** [INSERT_PUBLIC_REPOSITORY_URL_HERE]
+**Public Repository:** https://github.com/squareshorts/least-action
 
 This repo tests a bounded but ambitious claim:
 

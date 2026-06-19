@@ -1,3 +1,0 @@
-estimator,formula,term,coefficient,std_error,ci_lower,ci_upper,p_value,n_observations,n_subjects,n_items,fallback_reason
-mixedlm_random_subject_intercept_item_variance_component,rho_hat ~ semantic_margin + atypical,semantic_margin,-0.6613540015546938,0.010168932666644061,-0.681284743342529,-0.6414232597668587,0.0,1064,60,19,
-mixedlm_random_subject_intercept_item_variance_component,rho_hat ~ semantic_margin + atypical,atypical,-0.07617349860411254,0.031298977946628385,-0.13751836813241758,-0.014828629075807495,0.014943825147826434,1064,60,19,

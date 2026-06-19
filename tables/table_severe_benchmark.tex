@@ -1,0 +1,22 @@
+\begin{table}[htbp]
+\centering
+\caption{Severe benchmark: evaluating trajectory models across raw path prediction, semantic generalization, latent-variable validity, and mechanistic interpretability.}
+\label{tab:severe-benchmark}
+\scriptsize
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lclcc}
+\toprule
+Model & Raw held-out NLL & Semantic LOIO NLL gain & Latent-variable validity & Mechanistic interpretability \\
+\midrule
+Minimum jerk & 44.294 & No & No & No \\
+Condition mean trajectory & 15.383 & No & No & No \\
+Bezier condition curve & 26.135 & No & No & No \\
+Spline condition curve & 33.612 & No & No & No \\
+Trial-fitted action $\rho$ upper bound & 31.386 & No & Yes & Yes \\
+Condition-only action $\rho$ & 38.813 & 0.000 & Yes & Yes \\
+Original semantic-margin action $\rho$ & 38.175 & 0.694 & Yes & Yes \\
+Embedding-rank semantic-margin action $\rho$ & Evaluated & 0.210 & Yes & Yes \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

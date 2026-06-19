@@ -1,0 +1,25 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Mixed-effects model details for trial-level $\rho$.}
+\label{tab:mixed-effects-details}
+\begin{tabular}{llrrrr}
+\toprule
+Component & Term/quantity & Value/coefficient & SE & 95\% CI & $p$ \\
+\midrule
+Model & Formula & \texttt{rho\_hat ~ semantic\_margin + atypical} & -- & -- & -- \\
+Estimator/package & Estimator & statsmodels MixedLM, ML, L-BFGS & -- & -- & -- \\
+Random effects & Included & item variance component with subject grouping; no subject random-intercept variance estimated & -- & -- & -- \\
+Random effect variance & Subject & not estimated & -- & -- & -- \\
+Random effect variance & Item & 0.096243 & -- & -- & -- \\
+Residual variance & Residual & 0.096243 & -- & -- & -- \\
+Convergence & Status & converged & -- & -- & -- \\
+Sample & Trials & 1064 & -- & -- & -- \\
+Sample & Subjects & 60 & -- & -- & -- \\
+Sample & Items & 19 & -- & -- & -- \\
+Fixed effect & intercept & 0.7001 & 0.0141 & [0.6726, 0.7277] & $<1\times10^{-300}$ \\
+Fixed effect & semantic margin & -0.6614 & 0.0102 & [-0.6813, -0.6414] & $<1\times10^{-300}$ \\
+Fixed effect & atypical label & -0.0762 & 0.0313 & [-0.1375, -0.0148] & 0.0149 \\
+\bottomrule
+\end{tabular}
+\end{table}

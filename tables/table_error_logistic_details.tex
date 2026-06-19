@@ -1,0 +1,15 @@
+\begin{table}[htbp]
+\centering
+\small
+\caption{Logistic regression details for trial-level errors.}
+\label{tab:error-logistic-details}
+\begin{tabular}{lrrrrrrrrl}
+\toprule
+Term & Coefficient & SE & $p$ & Odds ratio & OR 95\% CI & $n$ trials & $n$ errors & McFadden $R^2$ & SE type \\
+\midrule
+intercept & -1.0141 & 0.3948 & 0.0102 & 0.363 & [0.167, 0.786] & 1140 & 76 & 0.080 & conventional MLE \\
+semantic margin & -5.7149 & 1.1024 & 2.170e-07 & 0.003 & [0.000, 0.029] & 1140 & 76 & 0.080 & conventional MLE \\
+atypical label & -1.7728 & 0.5775 & 0.0021 & 0.170 & [0.055, 0.527] & 1140 & 76 & 0.080 & conventional MLE \\
+\bottomrule
+\end{tabular}
+\end{table}

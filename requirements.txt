@@ -4,3 +4,6 @@ scipy
 matplotlib
 scikit-learn
 statsmodels
+sentence-transformers==2.7.0
+torch
+transformers
