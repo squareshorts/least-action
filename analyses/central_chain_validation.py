@@ -573,7 +573,7 @@ def null_row(
         "Mean NLL": math.nan,
         "NLL gain": float(gains.mean()),
         "Improved items": math.nan,
-        "Null/notes": f"null p={format_p(p)}; {n_permutations} draws",
+        "Null/notes": f"null {format_p_note(p)}; {n_permutations} draws",
     }
 
 
@@ -842,6 +842,24 @@ def format_p(value: object) -> str:
     if p < 0.001:
         return "$<.001$"
     return f"{p:.3f}"
+
+
+def format_p_note(value: object) -> str:
+    try:
+        p = float(value)
+    except (TypeError, ValueError):
+        return f"$p={value}$"
+    if math.isnan(p):
+        return "$p$ unavailable"
+    if p < 0.001:
+        return rf"empirical $p = {format_empirical_scientific(p)}$"
+    return f"$p = {p:.3f}$"
+
+
+def format_empirical_scientific(value: float) -> str:
+    exponent = int(math.floor(math.log10(value)))
+    mantissa = value / (10**exponent)
+    return rf"{mantissa:.1f}\times 10^{{{exponent}}}"
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:

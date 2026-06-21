@@ -2,24 +2,32 @@
 \centering
 \caption{Condition-level behavioral/action summaries and paired subject-level condition effects.}
 \label{tab:condition-effects}
-\begin{tabular}{lrrrr}
+\small
+\textbf{Panel A. Condition-level summaries}\\[0.25em]
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrrr@{}}
 \toprule
 Metric & Typical & Atypical & Difference & 95\% bootstrap CI \\
 \midrule
-\multicolumn{5}{l}{\textit{Panel A. Condition-level summaries}} \\
 Trials & 744 & 320 & -- & -- \\
 AUC & 0.211 & 0.279 & -- & -- \\
 Maximum deviation & 0.780 & 0.992 & -- & -- \\
 Response time (s) & 1.767 & 2.548 & -- & -- \\
 Trial-level $\rho$ & 0.442 & 0.682 & -- & -- \\
 Action gap & -0.102 & -0.148 & -- & -- \\
+\bottomrule
+\end{tabular*}
+\par\vspace{1.6em}
+\noindent\makebox[\linewidth][c]{\textbf{Panel B. Paired subject-level inference}}
+\par\vspace{0.2em}
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrrr@{}}
+\toprule
+Metric & Typical & Atypical & Difference & 95\% bootstrap CI \\
 \midrule
-\multicolumn{5}{l}{\textit{Panel B. Paired subject-level inference}} \\
 $\rho$ & 0.445 & 0.680 & 0.235 & [0.165, 0.308] \\
 AUC & 0.211 & 0.278 & 0.067 & [0.039, 0.096] \\
 Maximum deviation & 0.784 & 0.993 & 0.209 & [0.138, 0.284] \\
 Response time (s) & 1.767 & 2.518 & 0.751 & [0.555, 0.990] \\
 Action gap & -0.103 & -0.148 & -0.046 & [-0.060, -0.032] \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
 \end{table}

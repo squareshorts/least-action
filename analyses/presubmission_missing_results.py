@@ -821,7 +821,9 @@ Add Table S: stochastic variance calibration to the residual/noise robustness se
 
 Add Table S: mixed-effects model details, Table S: error logistic details, and Table S: reproducibility metadata to the validation/reproducibility supplement sections.
 """
-    (ROOT / "RESULTS_INSERTIONS.md").write_text(text, encoding="utf-8")
+    report_dir = OUTPUTS / "reports"
+    report_dir.mkdir(parents=True, exist_ok=True)
+    (report_dir / "results_insertions.md").write_text(text, encoding="utf-8")
 
 
 def write_latex_table(

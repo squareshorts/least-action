@@ -281,21 +281,29 @@ def write_condition_effects_table(summary: dict[str, Any]) -> None:
         "\\centering",
         "\\caption{Condition-level behavioral/action summaries and paired subject-level condition effects.}",
         "\\label{tab:condition-effects}",
-        "\\begin{tabular}{lrrrr}",
+        "\\small",
+        "\\textbf{Panel A. Condition-level summaries}\\\\[0.25em]",
+        "\\begin{tabular*}{\\linewidth}{@{\\extracolsep{\\fill}}lrrrr@{}}",
         "\\toprule",
         "Metric & Typical & Atypical & Difference & 95\\% bootstrap CI \\\\",
         "\\midrule",
-        "\\multicolumn{5}{l}{\\textit{Panel A. Condition-level summaries}} \\\\",
     ]
     lines.extend(" & ".join(escape(cell) for cell in row) + " \\\\" for row in condition_rows)
     lines.extend(
         [
+            "\\bottomrule",
+            "\\end{tabular*}",
+            "\\par\\vspace{1.6em}",
+            "\\noindent\\makebox[\\linewidth][c]{\\textbf{Panel B. Paired subject-level inference}}",
+            "\\par\\vspace{0.2em}",
+            "\\begin{tabular*}{\\linewidth}{@{\\extracolsep{\\fill}}lrrrr@{}}",
+            "\\toprule",
+            "Metric & Typical & Atypical & Difference & 95\\% bootstrap CI \\\\",
             "\\midrule",
-            "\\multicolumn{5}{l}{\\textit{Panel B. Paired subject-level inference}} \\\\",
         ]
     )
     lines.extend(" & ".join(escape(cell) for cell in row) + " \\\\" for row in paired_rows)
-    lines.extend(["\\bottomrule", "\\end{tabular}", "\\end{table}", ""])
+    lines.extend(["\\bottomrule", "\\end{tabular*}", "\\end{table}", ""])
     (TABLES / "table_condition_effects.tex").write_text("\n".join(lines), encoding="utf-8")
 
 
@@ -502,24 +510,26 @@ def write_semantic_validation_table(summary: dict[str, Any]) -> None:
         "\\caption{Semantic-prior model comparison and multisource semantic validation. LOOCV: leave-one-item-out cross-validation.}",
         "\\label{tab:semantic-validation}",
         "\\small",
-        "\\begin{tabular}{llrrr}",
+        "\\textbf{Panel A. Primary reported semantic margin}\\\\[0.25em]",
+        "\\begin{tabular*}{\\linewidth}{@{\\extracolsep{\\fill}}p{0.27\\linewidth}p{0.33\\linewidth}rrr@{}}",
         "\\toprule",
         "Model & Predictor set & $R^2$ & AIC & Key slope \\\\",
         "\\midrule",
-        "\\multicolumn{5}{l}{\\textit{Panel A. Primary reported semantic margin}} \\\\",
     ]
     lines.extend(" & ".join(escape(cell) for cell in row) + " \\\\" for row in model_rows)
     lines.extend(
         [
             "\\bottomrule",
-            "\\end{tabular}",
-            "\\vspace{0.5em}",
+            "\\end{tabular*}",
+            "\\par\\vspace{1.6em}",
+            "\\noindent\\makebox[\\linewidth][c]{\\textbf{Panel B. Primary and embedding-based semantic sources}}",
+            "\\par\\vspace{0.2em}",
+            "\\scriptsize",
             "\\resizebox{\\linewidth}{!}{%",
-            "\\begin{tabular}{llccccccc}",
+            "\\begin{tabular}{p{0.25\\linewidth}p{0.20\\linewidth}ccccccc}",
             "\\toprule",
             "Source & Type & Cov. & $r_s$ & $p$ & LOOCV $r_s$ & LOOCV $p$ & RMSE & MAE \\\\",
             "\\midrule",
-            "\\multicolumn{9}{l}{\\textit{Panel B. Primary and embedding-based semantic sources}} \\\\",
         ]
     )
     lines.extend(" & ".join(escape(cell) for cell in row) + " \\\\" for row in validation_rows)

@@ -73,8 +73,10 @@ def main():
         f.write("\n".join(lines))
     print(f"Generated {out_file}")
 
-    # Generate Manuscript Insert
-    insert_path = ROOT / "manuscript_insert_discussion_benchmark.tex"
+    # Keep optional prose output with generated reports rather than repo-root notes.
+    report_dir = ROOT / "outputs" / "reports"
+    report_dir.mkdir(parents=True, exist_ok=True)
+    insert_path = report_dir / "discussion_benchmark_insert.tex"
     insert_text = r"""% To be inserted in the Discussion section
 
 \subsection{Severe Benchmark and Model-Value Separation}
