@@ -52,8 +52,6 @@ Corresponding author: \href{mailto:apereira@ufpa.br}{apereira@ufpa.br}}}
 
 \noindent\textbf{Article title:} Semantic Action Landscapes: A Stochastic Least-Action Model Links Category Structure to Dynamic Response Competition
 
-\noindent\textbf{Journal:} Computational Brain \& Behavior
-
 \noindent\textbf{Author:} Antonio Pereira
 
 \noindent\textbf{Corresponding author:} \href{mailto:apereira@ufpa.br}{apereira@ufpa.br}
@@ -71,12 +69,12 @@ Corresponding author: \href{mailto:apereira@ufpa.br}{apereira@ufpa.br}}}
 
 \section*{Supplementary Material}
 
-\section{Semantic Predictor Provenance}
+\section{Semantic margins}
 \label{sec:supp-semantic-provenance}
 
-The primary semantic predictor is the inverse-typicality margin computed from the item--category scoring table reported in the main text (Section~2.4). An independent published norm source mapping the exact 19 German animal exemplars to the same target and competitor categories was not identified. The semantic-margin analysis is therefore retrospective, and prospective validation with preregistered norms is the key next test.
+The primary semantic predictor is the inverse-typicality margin computed from the item--category scoring table reported in the main text. The analysis relates this item-level margin to fitted competitor attraction, held-out stochastic likelihood, and behavioral difficulty.
 
-Table~\ref{tab:semantic-provenance} compares the primary inverse-typicality margin with an ordinal robustness check based on within-condition semantic rank. The within-condition rank ordering preserves the relative ordering of items within each condition but does not constitute an independent norm source. Both orderings predict item-level $\hat{\rho}$ in the same direction.
+Table~\ref{tab:semantic-provenance} compares the primary inverse-typicality margin with an ordinal robustness check based on within-condition semantic rank. Both orderings predict item-level $\hat{\rho}$ in the same direction.
 
 \input{tables/table_semantic_provenance.tex}
 
@@ -89,22 +87,18 @@ Table~\ref{tab:semantic-regression-details} reports the item-level regression de
 \subsection{Multisource semantic validation}
 \label{sec:supp-multisource}
 
-A multisource semantic validation was conducted to test whether the semantic--action relation generalized beyond the reported item--category scoring table. An audit of published German semantic resources found no verified accessible typicality norm covering the exact 19 item--category contrasts (Table~\ref{tab:semantic-source-audit}). The secondary computational check therefore evaluated three pretrained multilingual sentence-embedding models: \texttt{T-Systems-onsite/cross-en-de-roberta-sentence-transformer}, \texttt{paraphrase-multilingual-mpnet-base-v2}, and \texttt{multilingual-e5-base}. German animal names and category labels were encoded after transliterated umlauts were corrected to canonical orthography, for example \textit{Saeugetier} $\rightarrow$ \textit{Säugetier} and \textit{Chamaeleon} $\rightarrow$ \textit{Chamäleon}. Embedding margins were computed as $\mathrm{emb\_margin}_i = \mathrm{emb\_sim}_{T,i} - \mathrm{emb\_sim}_{C,i}$. A rank-averaged multisource margin was also computed across the three embedding models.
+A multisource semantic validation tested whether the semantic--action relation generalized beyond the item--category scoring table. The computational validation evaluated three pretrained multilingual sentence-embedding models: \texttt{T-Systems-onsite/cross-en-de-roberta-sentence-transformer}, \texttt{paraphrase-multilingual-mpnet-base-v2}, and \texttt{multilingual-e5-base}. German animal names and category labels were encoded after transliterated umlauts were corrected to canonical orthography, for example \textit{Saeugetier} $\rightarrow$ \textit{Säugetier} and \textit{Chamaeleon} $\rightarrow$ \textit{Chamäleon}. Embedding margins were computed as $\mathrm{emb\_margin}_i = \mathrm{emb\_sim}_{T,i} - \mathrm{emb\_sim}_{C,i}$. A rank-averaged multisource margin was also computed across the three embedding models.
 
-The main-text multisource validation table summarizes the validation metrics. After orthographic correction, the rank-averaged embedding margin predicted fitted and held-out item-level $\hat{\rho}$. These results show that the semantic--action relation is recoverable from independent computational representations and is not confined to the reported scoring table. Table~\ref{tab:multisource-semantic-scores} reports the item-level scores across all evaluated sources.
+The main-text multisource validation table summarizes the validation metrics. After orthographic correction, the rank-averaged embedding margin predicted fitted and held-out item-level $\hat{\rho}$.
 
-\input{tables/table_semantic_source_audit.tex}
-
-\input{tables/table_multisource_semantic_scores.tex}
-
-\section{Path and Negative-Control Analyses}
+\section{Path and control analyses}
 \label{sec:supp-path-negative-controls}
 
 The main text reports the item-level path model because semantic margin varies at the item level. Table~\ref{tab:path-mediation-trial} reports the complementary trial-level mixed path estimates. These models used subject grouping with an item variance component and asked whether semantic margin predicted behavioral outcomes indirectly through fitted $\hat{\rho}$.
 
 \input{tables/table_path_mediation_trial.tex}
 
-Table~\ref{tab:negative-control-semantics} reports the targeted semantic negative-control analysis. The reversed margin is included as an orientation diagnostic rather than as an independent predictor, because an unconstrained linear model can reverse its slope and recover the same numerical fit. The theoretically relevant point is that it fails the prespecified sign test.
+Table~\ref{tab:negative-control-semantics} reports the targeted semantic control analysis. The reversed margin is included as an orientation check because an unconstrained linear model can reverse its slope and recover the same numerical fit.
 
 \input{tables/table_negative_control_semantics.tex}
 
@@ -113,7 +107,7 @@ Table~\ref{tab:negative-control-semantics} reports the targeted semantic negativ
 
 \subsection{Bootstrap confidence interval for mean NLL gain}
 
-Because semantic margin varies across only 19 items, item-level inference is primary. The mean item-wise NLL gain of 0.694 units was evaluated by item-resampling bootstrap with 4,000 replications. The 95\% bootstrap confidence interval for the mean item-wise gain was [0.230, 1.384] NLL units, computed by the percentile method. The gain was positive for 15 of 19 items; an exact two-tailed binomial sign test against $H_0: p = 0.5$ yielded $p = 0.019$.
+The mean item-wise NLL gain of 0.694 units was evaluated by item-resampling bootstrap with 4,000 replications. The 95\% bootstrap confidence interval for the mean item-wise gain was [0.230, 1.384] NLL units, computed by the percentile method. The gain was positive for 15 of 19 items; an exact two-tailed binomial sign test against $H_0: p = 0.5$ yielded $p = 0.019$.
 
 \input{tables/table_item_bootstrap.tex}
 
@@ -125,11 +119,11 @@ Table~\ref{tab:loocv-residuals} reports the leave-one-item-out residuals, define
 
 \subsection{Item-level influence analysis}
 
-Table~\ref{tab:item-influence} reports the mean NLL gain after excluding each item one at a time. If the overall gain were driven by one atypical item, removing that item would substantially reduce the gain. Excluding Wal produced the largest reduction in the mean gain, whereas excluding typical items with near-zero gain left the result closer to the full-sample estimate. The gain is therefore influenced by the most competitive atypical items, but it is not driven exclusively by a single outlier item.
+Table~\ref{tab:item-influence} reports the mean NLL gain after excluding each item one at a time. Excluding Wal produced the largest reduction in the mean gain, whereas excluding typical items with near-zero gain left the result closer to the full-sample estimate.
 
 \input{tables/table_item_influence.tex}
 
-Table~\ref{tab:item-slope-influence-summary} and Table~\ref{tab:item-slope-influence} report the corresponding jackknife influence analysis for the semantic margin $\rightarrow \hat{\rho}$ slope. All jackknife slopes remained negative, and removing Wal produced the largest attenuation.
+Table~\ref{tab:item-slope-influence-summary} and Table~\ref{tab:item-slope-influence} report the corresponding jackknife influence analysis for the semantic margin $\rightarrow \hat{\rho}$ slope. All jackknife slopes remained negative.
 
 \input{tables/table_item_slope_influence_summary.tex}
 
@@ -137,8 +131,8 @@ Table~\ref{tab:item-slope-influence-summary} and Table~\ref{tab:item-slope-influ
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.86\linewidth]{semantic_slope_jackknife.png}
-  \caption{\textbf{Leave-one-item-out semantic slope influence.} The margin--$\rho$ slope was recomputed after excluding each exemplar in turn. All slopes remained negative. Removing Wal produced the largest attenuation, but the estimated slope remained below zero.}
+  \includegraphics[width=0.86\linewidth]{figures/semantic_slope_jackknife.png}
+  \caption{\textbf{Leave-one-item-out semantic slope influence.} The margin--$\rho$ slope was recomputed after excluding each exemplar in turn. All slopes remained negative.}
   \label{fig:supp-semantic-slope-jackknife}
 \end{figure}
 
@@ -149,10 +143,10 @@ Table~\ref{tab:subject-cv-paired} reports paired subject-level RMSE comparisons 
 
 \input{tables/table_subject_cv_paired.tex}
 
-\section{Parameter Boundary Report}
+\section{Parameter boundaries}
 \label{sec:supp-boundary}
 
-The competitor-attraction grid covered $\rho \in [0.00, 2.00]$ in steps of 0.05, giving 41 grid points. Table~\ref{tab:boundary-report} reports the percentage of trial-level, item-level, and fold-level fits at the grid boundaries. Approximately 7.0\% of trial-level fits were at $\rho = 0.00$ and 3.4\% were at $\rho = 2.00$. Because fewer than 15\% of trial-level fits reached the upper boundary, the current grid range is adequate for the majority of trials. No item-level mean fit reached either boundary. The $\rho = 2.00$ boundary affects a minority of atypical trials, primarily Wal; expanding the grid to $\rho_{\max} = 3.00$ or using continuous optimization is recommended for future work with more extreme items.
+The competitor-attraction grid covered $\rho \in [0.00, 2.00]$ in steps of 0.05, giving 41 grid points. Table~\ref{tab:boundary-report} reports the percentage of trial-level, item-level, and fold-level fits at the grid boundaries. Approximately 7.0\% of trial-level fits were at $\rho = 0.00$ and 3.4\% were at $\rho = 2.00$. No item-level mean fit reached either boundary.
 
 \input{tables/table_boundary_report.tex}
 
@@ -161,18 +155,16 @@ The competitor-attraction grid covered $\rho \in [0.00, 2.00]$ in steps of 0.05,
 
 The primary sensitivity table in the main text varies $\alpha$, $\beta$, $\sigma_C$, and $K$. Table~\ref{tab:sensitivity-lambda-gamma} documents the analytical effect of perturbing $\lambda$, the potential scale, and $\gamma$, the competitor-decay exponent.
 
-Full empirical sensitivity for $\lambda$ and $\gamma$ requires recomputing the action grid because these parameters appear inside the action functional. The key identifiability constraint is that $\lambda$ and $\rho$ are multiplicatively coupled in the potential term. Rescaling $\lambda$ by a constant $c$ shifts all fitted $\hat{\rho}$ values by approximately $1/c$, so the sign of the semantic-margin slope is preserved but the numerical slope changes. Changing $\gamma$ shifts the temporal profile of competitor attraction without altering the overall $\lambda \cdot \rho$ product. Neither perturbation is expected to change the sign of the margin--$\rho$ relationship, which is the primary claim of the semantic analysis.
+The key identifiability constraint is that $\lambda$ and $\rho$ are multiplicatively coupled in the potential term. Rescaling $\lambda$ by a constant $c$ shifts fitted $\hat{\rho}$ values by approximately $1/c$, preserving the sign of the semantic-margin slope while changing the numerical slope. Changing $\gamma$ shifts the temporal profile of competitor attraction.
 
 \input{tables/table_sensitivity_lambda_gamma.tex}
 
-\section{Residual and Noise Robustness}
-\label{sec:supp-robustness}
+\section{Stochastic likelihood variance calibration}
+\label{sec:supp-variance-calibration}
 
-The primary NLL model assumes independent isotropic Gaussian residuals around the model path. Table~\ref{tab:stochastic-variance-calibration} reports the fold-level training variance estimates used in the stochastic likelihood calculation. Table~\ref{tab:robustness-rmse} provides an RMSE-only item-level comparison that does not require the Gaussian likelihood assumption. In terms of raw RMSE, the condition-only action model achieves lower item-mean error than the semantic-margin model for 15 of 19 items. The NLL gain for 15 of 19 items under the stochastic model therefore arises from residual-variance calibration in the leave-one-item-out fold rather than uniformly lower raw RMSE.
+The stochastic likelihood calculations estimated residual variance from training data in each fold. Table~\ref{tab:stochastic-variance-calibration} reports the resulting fold-level variance calibration and held-out fit summaries.
 
 \input{tables/table_stochastic_variance_calibration.tex}
-
-\input{tables/table_robustness_rmse.tex}
 
 \section{Error-Trial Analysis}
 \label{sec:supp-error}
@@ -192,7 +184,7 @@ Table~\ref{tab:error-logistic} reports a compact logistic regression predicting 
 \section{Covariate Sensitivity}
 \label{sec:supp-covariate}
 
-With only 19 items, a large multiple regression is not appropriate. Table~\ref{tab:covariate-sensitivity} reports one-covariate-at-a-time checks for the semantic-margin slope in $\hat{\rho} \sim \mathrm{margin} + \mathrm{covariate}$. The semantic-margin slope remains negative across all covariate additions, indicating that the margin--$\hat{\rho}$ relationship is not explained by word length, item response time, number of trials, or typical/atypical label.
+Table~\ref{tab:covariate-sensitivity} reports one-covariate-at-a-time checks for the semantic-margin slope in $\hat{\rho} \sim \mathrm{margin} + \mathrm{covariate}$, using exemplars as the unit of analysis. The semantic-margin slope remains negative across all covariate additions, showing that the margin--$\hat{\rho}$ relationship is not explained by word length, item response time, number of trials, or typical/atypical label.
 
 \input{tables/table_covariate_sensitivity.tex}
 
@@ -203,24 +195,24 @@ Table~\ref{tab:mixed-effects-details} reports the exact mixed-effects model deta
 
 \input{tables/table_mixed_effects_details.tex}
 
-\section{Model-Comparison Clarification}
+\section{Model comparison}
 \label{sec:supp-model-hierarchy}
 
-Table~\ref{tab:model-hierarchy} reports the full model hierarchy under leave-one-item-out stochastic path NLL. Descriptive baselines, including condition means, Bezier attraction curves, and spline attraction curves, achieve lower NLL than the constrained action model. This is expected because these baselines are optimized to approximate trajectory shape with fewer mechanistic constraints. The action model's contribution is interpretability rather than best raw NLL. The targeted comparison is within the action-model family: whether semantic margin improves the action model relative to condition-only $\rho$. The semantic-margin model achieved a mean item-wise NLL gain of 0.694 units, with positive gain for 15 of 19 items.
+Table~\ref{tab:model-hierarchy} reports the full model hierarchy under leave-one-item-out stochastic path NLL. Descriptive baselines, including condition means, Bezier attraction curves, and spline attraction curves, achieve lower NLL than the constrained action model. Within the action-model family, semantic margin improved the action model relative to condition-only $\rho$. The semantic-margin model achieved a mean item-wise NLL gain of 0.694 units, with positive gain for 15 of 19 items.
 
 \input{tables/table_model_hierarchy.tex}
 
-\section{Severe Benchmark}
+\section{Benchmark summary}
 \label{sec:supp-severe-benchmark}
 
-Table~\ref{tab:severe-benchmark} separates raw trajectory prediction from mechanistic interpretability. Flexible descriptive baselines summarize empirical path shape directly. Action models provide fitted competitor attraction and action-gap quantities that can be related to semantic and perceptual competition.
+Table~\ref{tab:severe-benchmark} separates raw trajectory prediction, semantic generalization, latent-variable validity, and mechanistic interpretability.
 
 \input{tables/table_severe_benchmark.tex}
 
 \section{Parameter Recovery Expansion}
 \label{sec:supp-recovery}
 
-Table~\ref{tab:recovery-expansion} extends parameter recovery to report bias, MAE, Pearson correlation, and boundary-hit rates across path-noise levels $\tau$. Recovery is excellent at low noise and remains strong at the highest tested noise level. Boundary-hit rates are low for all noise levels, indicating that the grid range is adequate for simulated trajectories with the tested noise.
+Table~\ref{tab:recovery-expansion} extends parameter recovery to report bias, MAE, Pearson correlation, and boundary-hit rates across path-noise levels $\tau$. Recovery is strongest at low noise and remains stable at the highest tested noise level. Boundary-hit rates are low across tested noise levels.
 
 \input{tables/table_recovery_expansion.tex}
 
@@ -228,10 +220,10 @@ Table~\ref{tab:recovery-lambda-gamma} documents the identifiability constraints 
 
 \input{tables/table_recovery_lambda_gamma_note.tex}
 
-\section{Reproducibility Metadata}
+\section{Computational settings}
 \label{sec:supp-reproducibility}
 
-Table~\ref{tab:reproducibility-metadata} summarizes the dataset, preprocessing sample, model grid, optimizer, main random seeds, code hash, and package versions available from the current analysis environment.
+Table~\ref{tab:reproducibility-metadata} summarizes the dataset, preprocessing sample, model grid, optimizer, random seeds, and software environment.
 
 \input{tables/table_reproducibility_metadata.tex}
 

@@ -573,7 +573,7 @@ def null_row(
         "Mean NLL": math.nan,
         "NLL gain": float(gains.mean()),
         "Improved items": math.nan,
-        "Null/notes": f"null {format_p_note(p)}; {n_permutations} draws",
+        "Null/notes": f"{format_p_note(p)}; {n_permutations} draws",
     }
 
 
@@ -853,7 +853,7 @@ def format_p_note(value: object) -> str:
         return "$p$ unavailable"
     if p < 0.001:
         return rf"empirical $p = {format_empirical_scientific(p)}$"
-    return f"$p = {p:.3f}$"
+    return f"null $p = {p:.3f}$"
 
 
 def format_empirical_scientific(value: float) -> str:
