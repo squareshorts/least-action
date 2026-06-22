@@ -890,37 +890,71 @@ def plot_subject_paired_rho(trial_fits: pd.DataFrame, destination: Path) -> None
         values="rho_hat",
         aggfunc="mean",
     ).dropna()
-    fig, ax = plt.subplots(figsize=(5.4, 4.6))
+    paired = paired_subject_inference(trial_fits, "rho_hat")
+    diffs = (by_subject["Atypical"] - by_subject["Typical"]).to_numpy(float)
+
+    fig, (ax, ax_delta) = plt.subplots(
+        1,
+        2,
+        figsize=(7.0, 4.4),
+        gridspec_kw={"width_ratios": [2.4, 1.0], "wspace": 0.34},
+    )
     x = np.array([0.0, 1.0])
     for _, row in by_subject.iterrows():
-        ax.plot(x, [row["Typical"], row["Atypical"]], color="#9aa0a6", lw=0.9, alpha=0.55)
-    means = [by_subject["Typical"].mean(), by_subject["Atypical"].mean()]
-    ci = []
+        ax.plot(x, [row["Typical"], row["Atypical"]], color="#9aa0a6", lw=0.65, alpha=0.34)
+
+    means = np.array([by_subject["Typical"].mean(), by_subject["Atypical"].mean()])
+    values = by_subject[["Typical", "Atypical"]].to_numpy(float)
     rng = np.random.default_rng(20260513)
-    for condition in ["Typical", "Atypical"]:
-        values = by_subject[condition].to_numpy()
-        boot = [rng.choice(values, size=len(values), replace=True).mean() for _ in range(3000)]
-        ci.append(
-            [
-                means[len(ci)] - np.quantile(boot, 0.025),
-                np.quantile(boot, 0.975) - means[len(ci)],
-            ]
-        )
+    boot_idx = rng.integers(0, len(by_subject), size=(5000, len(by_subject)))
+    boot_means = values[boot_idx].mean(axis=1)
+    mean_ci = np.quantile(boot_means, [0.025, 0.975], axis=0)
+    mean_yerr = np.vstack((means - mean_ci[0], mean_ci[1] - means))
     ax.errorbar(
         x,
         means,
-        yerr=np.array(ci).T,
+        yerr=mean_yerr,
         color="#c44536",
         marker="o",
-        lw=2.4,
+        markersize=5.5,
+        lw=2.6,
         capsize=4,
-        label="subject mean +/- bootstrap CI",
+        label="mean across subjects +/- bootstrap 95% CI",
     )
     ax.set_xticks(x, ["Typical", "Atypical"])
-    ax.set_ylabel("subject mean fitted rho")
+    ax.set_ylabel(r"Mean fitted $\rho$")
     ax.legend(frameon=False, fontsize=8)
+
+    delta_mean = paired["mean_diff_atypical_minus_typical"]
+    delta_ci_low, delta_ci_high = paired["bootstrap_ci_95"]
+    jitter = rng.normal(0.0, 0.018, size=len(diffs))
+    ax_delta.axhline(0.0, color="#5f6368", lw=0.9, linestyle="--", zorder=1)
+    ax_delta.scatter(jitter, diffs, color="#9aa0a6", s=11, alpha=0.34, linewidth=0, zorder=2)
+    ax_delta.errorbar(
+        [0.0],
+        [delta_mean],
+        yerr=[[delta_mean - delta_ci_low], [delta_ci_high - delta_mean]],
+        color="#c44536",
+        marker="o",
+        markersize=6,
+        lw=2.6,
+        capsize=4,
+        zorder=3,
+    )
+    ax_delta.set_xlim(-0.18, 0.18)
+    ax_delta.set_xticks([0.0], [r"$\Delta\rho$"])
+    ax_delta.set_ylabel(r"$\Delta\rho$ (Atypical - Typical)")
+
+    for axis in (ax, ax_delta):
+        axis.grid(axis="y", color="#e7e7e7", linewidth=0.7)
+        axis.set_axisbelow(True)
+        axis.spines["top"].set_visible(False)
+        axis.spines["right"].set_visible(False)
+        axis.tick_params(axis="both", labelsize=9.5)
+
     fig.tight_layout()
-    fig.savefig(destination, dpi=180)
+    fig.savefig(destination, dpi=300, bbox_inches="tight")
+    fig.savefig(destination.with_suffix(".pdf"), bbox_inches="tight")
     plt.close(fig)
 
 

@@ -148,6 +148,7 @@ def copy_figures() -> None:
         "trajectory_fit.png",
         "rho_by_condition.png",
         "rho_subject_paired.png",
+        "rho_subject_paired.pdf",
         "semantic_prior_rho.png",
         "semantic_predicted_vs_fitted.png",
         "decisive_four_panel.png",
@@ -163,6 +164,7 @@ def write_table_files(summary: dict[str, Any], repro: dict[str, Any], semantic_s
     write_dataset_table(repro)
     write_numerical_table()
     write_condition_effects_table(summary)
+    write_rho_subject_paired_summary(summary)
     write_rmse_table()
     write_cluster_table(summary)
     write_stochastic_likelihood_table(summary)
@@ -339,6 +341,45 @@ def write_paired_table(summary: dict[str, Any]) -> None:
             )
         )
     table("Robust paired subject-level inference for condition effects.", "tab:paired", ["Metric", "Typical mean", "Atypical mean", "Difference", "95\\% bootstrap CI"], rows, "table_paired.tex")
+
+
+def write_rho_subject_paired_summary(summary: dict[str, Any]) -> None:
+    rho = summary["robust_inference"]["paired_subject"]["rho_hat"]
+    ci_low, ci_high = rho["bootstrap_ci_95"]
+    rows = [
+        ("Subjects with both conditions", rho["n_subjects"]),
+        ("Typical mean $\\rho$", fmt(rho["typical_mean"])),
+        ("Atypical mean $\\rho$", fmt(rho["atypical_mean"])),
+        ("Paired $\\Delta\\rho$ (Atypical -- Typical)", fmt(rho["mean_diff_atypical_minus_typical"])),
+        ("Bootstrap 95\\% CI for paired $\\Delta\\rho$", f"[{fmt(ci_low)}, {fmt(ci_high)}]"),
+        ("Paired $t$-test $p$", fmtp(rho["paired_t_p"])),
+        ("Wilcoxon signed-rank $p$", fmtp(rho["wilcoxon_p"])),
+    ]
+    table(
+        "Subject-level fitted $\\rho$ summary for the paired condition effect.",
+        "tab:rho-subject-paired-summary",
+        ["Statistic", "Value"],
+        rows,
+        "table_rho_subject_paired_summary.tex",
+    )
+
+    lines = [
+        "Subject-level fitted rho paired summary",
+        f"N subjects: {rho['n_subjects']}",
+        f"Typical mean rho: {rho['typical_mean']:.10f}",
+        f"Atypical mean rho: {rho['atypical_mean']:.10f}",
+        f"Paired delta rho (Atypical - Typical): {rho['mean_diff_atypical_minus_typical']:.10f}",
+        f"Bootstrap 95% CI for paired delta rho: [{ci_low:.10f}, {ci_high:.10f}]",
+        f"Paired t-test p-value: {rho['paired_t_p']:.10g}",
+        f"Wilcoxon signed-rank p-value: {rho['wilcoxon_p']:.10g}",
+        "",
+        "Quality checks:",
+        "Bootstrap resamples subject-level paired differences, not trials.",
+        "Subjects without both Typical and Atypical means are excluded before plotting and inference.",
+        "The main-panel red CIs bootstrap condition means across subjects.",
+        "The difference panel uses paired subject-level differences.",
+    ]
+    (OUTPUTS / "rho_subject_paired_summary.txt").write_text("\n".join(lines), encoding="utf-8")
 
 
 def write_cluster_table(summary: dict[str, Any]) -> None:
