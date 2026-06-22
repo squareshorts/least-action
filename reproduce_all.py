@@ -25,13 +25,40 @@ DEPRECATED_MAIN_TABLES = [
     "table_stochastic.tex",
     "table_item_nll.tex",
 ]
+CORE_TABLE_FILES = [
+    "table_dataset.tex",
+    "table_numerical_settings.tex",
+    "table_condition_effects.tex",
+    "table_rho_subject_paired_summary.tex",
+    "table_rmse.tex",
+    "table_cluster_regression.tex",
+    "table_stochastic_likelihood.tex",
+    "table_semantic_validation.tex",
+    "table_semantic_scores.tex",
+    "table_item_recovery.tex",
+]
+FULL_EXTRA_TABLE_FILES = [
+    "table_sensitivity.tex",
+    "table_permutation.tex",
+    "table_mixed_effects.tex",
+]
 
 
 def main() -> int:
+    return run_core()
+
+
+def prepare_directories() -> None:
     OUTPUTS.mkdir(exist_ok=True)
     FIGURES.mkdir(exist_ok=True)
     TABLES.mkdir(parents=True, exist_ok=True)
+    ROOT_TABLES.mkdir(parents=True, exist_ok=True)
 
+
+def run_core() -> int:
+    """Regenerate the core manuscript analysis, figures, tables, and summaries."""
+
+    prepare_directories()
     run([sys.executable, "scripts/compute_semantic_scores.py", "--out", "data/processed/semantic_scores.csv"])
     run(
         [
@@ -43,6 +70,21 @@ def main() -> int:
             "data/processed/semantic_scores.csv",
         ]
     )
+
+    summary = read_json(OUTPUTS / "summary.json")
+    semantic_scores = write_semantic_scores_19(summary)
+    reproducibility_summary = write_reproducibility_summary(summary, semantic_scores)
+    copy_figures()
+    write_core_table_files(summary, reproducibility_summary, semantic_scores)
+    copy_tables_to_root(CORE_TABLE_FILES)
+    remove_deprecated_main_tables()
+    return 0
+
+
+def run_full() -> int:
+    """Run the slower validation suite in addition to the core reproduction."""
+
+    run_core()
     run([sys.executable, "analyses/sensitivity_action_parameters.py"])
     run([sys.executable, "analyses/permutation_semantic_prior.py", "--n-permutations", "5000"])
     run([sys.executable, "analyses/mixed_effects_validation.py"])
@@ -53,7 +95,8 @@ def main() -> int:
     semantic_scores = write_semantic_scores_19(summary)
     reproducibility_summary = write_reproducibility_summary(summary, semantic_scores)
     copy_figures()
-    write_table_files(summary, reproducibility_summary, semantic_scores)
+    write_full_table_files(summary, reproducibility_summary, semantic_scores)
+    copy_tables_to_root(CORE_TABLE_FILES + FULL_EXTRA_TABLE_FILES)
     remove_deprecated_main_tables()
     run([sys.executable, "analyses/presubmission_missing_results.py"])
     run([sys.executable, "analyses/central_chain_validation.py"])
@@ -160,7 +203,14 @@ def copy_figures() -> None:
             shutil.copy2(src, FIGURES / name)
 
 
-def write_table_files(summary: dict[str, Any], repro: dict[str, Any], semantic_scores: pd.DataFrame) -> None:
+def copy_tables_to_root(filenames: list[str]) -> None:
+    for name in filenames:
+        src = TABLES / name
+        if src.exists():
+            shutil.copy2(src, ROOT_TABLES / name)
+
+
+def write_core_table_files(summary: dict[str, Any], repro: dict[str, Any], semantic_scores: pd.DataFrame) -> None:
     write_dataset_table(repro)
     write_numerical_table()
     write_condition_effects_table(summary)
@@ -170,10 +220,14 @@ def write_table_files(summary: dict[str, Any], repro: dict[str, Any], semantic_s
     write_stochastic_likelihood_table(summary)
     write_semantic_validation_table(summary)
     write_semantic_scores_table(semantic_scores)
+    write_item_recovery_table(summary)
+
+
+def write_full_table_files(summary: dict[str, Any], repro: dict[str, Any], semantic_scores: pd.DataFrame) -> None:
+    write_core_table_files(summary, repro, semantic_scores)
     write_sensitivity_table()
     write_permutation_table()
     write_mixed_effects_table()
-    write_item_recovery_table(summary)
 
 
 def remove_deprecated_main_tables() -> None:
@@ -205,6 +259,8 @@ def write_numerical_table() -> None:
         ("$\\rho$ grid", "$0,0.05,\\ldots,2.00$"),
         ("Velocity/deformation weight, $\\alpha$", "1.0"),
         ("Acceleration weight, $\\beta$", "0.003"),
+        ("Potential scale, $\\lambda$", "2.0"),
+        ("Temporal decay exponent, $\\gamma$", "1.2"),
         ("Target Gaussian width, $\\sigma_T$", "not used in primary nested model"),
         ("Competitor width, $\\sigma_C$", "0.9"),
         ("Boundary term, $B(q)$", "0 inside box constraints, $+\\infty$ outside"),
@@ -526,29 +582,10 @@ def write_semantic_validation_table(summary: dict[str, Any]) -> None:
     ]
 
     validation_path = OUTPUTS / "semantic_sources" / "multisource_semantic_validation_results.csv"
-    validation = pd.read_csv(validation_path)
-    validation_rows = []
-    for _, row in validation.iterrows():
-        source = str(row["source"]).replace("_", "\\_")
-        source_type = str(row["source_type"])
-        validation_rows.append(
-            (
-                source,
-                source_type,
-                str(row["coverage"]),
-                fmt(row["dir_spearman_r"]),
-                fmtp(row["dir_spearman_p"]),
-                fmt(row["loo_spearman_r"]),
-                fmtp(row["loo_spearman_p"]),
-                fmt(row["rmse"]),
-                fmt(row["mae"]),
-            )
-        )
-
     lines = [
         "\\begin{table}[htbp]",
         "\\centering",
-        "\\caption{Semantic-prior model comparison and multisource semantic validation. LOOCV: leave-one-item-out cross-validation.}",
+        "\\caption{Semantic-prior model comparison. When the full validation suite is run, this table also includes multisource semantic validation. LOOCV: leave-one-item-out cross-validation.}",
         "\\label{tab:semantic-validation}",
         "\\small",
         "\\textbf{Panel A. Primary reported semantic margin}\\\\[0.25em]",
@@ -562,19 +599,50 @@ def write_semantic_validation_table(summary: dict[str, Any]) -> None:
         [
             "\\bottomrule",
             "\\end{tabular*}",
-            "\\par\\vspace{1.6em}",
-            "\\noindent\\makebox[\\linewidth][c]{\\textbf{Panel B. Primary and embedding-based semantic sources}}",
-            "\\par\\vspace{0.2em}",
-            "\\scriptsize",
-            "\\resizebox{\\linewidth}{!}{%",
-            "\\begin{tabular}{p{0.25\\linewidth}p{0.20\\linewidth}ccccccc}",
-            "\\toprule",
-            "Source & Type & Cov. & $r_s$ & $p$ & LOOCV $r_s$ & LOOCV $p$ & RMSE & MAE \\\\",
-            "\\midrule",
         ]
     )
-    lines.extend(" & ".join(escape(cell) for cell in row) + " \\\\" for row in validation_rows)
-    lines.extend(["\\bottomrule", "\\end{tabular}", "}%", "\\end{table}", ""])
+    if validation_path.exists():
+        validation = pd.read_csv(validation_path)
+        validation_rows = []
+        for _, row in validation.iterrows():
+            source = str(row["source"]).replace("_", "\\_")
+            source_type = str(row["source_type"])
+            validation_rows.append(
+                (
+                    source,
+                    source_type,
+                    str(row["coverage"]),
+                    fmt(row["dir_spearman_r"]),
+                    fmtp(row["dir_spearman_p"]),
+                    fmt(row["loo_spearman_r"]),
+                    fmtp(row["loo_spearman_p"]),
+                    fmt(row["rmse"]),
+                    fmt(row["mae"]),
+                )
+            )
+        lines.extend(
+            [
+                "\\par\\vspace{1.6em}",
+                "\\noindent\\makebox[\\linewidth][c]{\\textbf{Panel B. Primary and embedding-based semantic sources}}",
+                "\\par\\vspace{0.2em}",
+                "\\scriptsize",
+                "\\resizebox{\\linewidth}{!}{%",
+                "\\begin{tabular}{p{0.25\\linewidth}p{0.20\\linewidth}ccccccc}",
+                "\\toprule",
+                "Source & Type & Cov. & $r_s$ & $p$ & LOOCV $r_s$ & LOOCV $p$ & RMSE & MAE \\\\",
+                "\\midrule",
+            ]
+        )
+        lines.extend(" & ".join(escape(cell) for cell in row) + " \\\\" for row in validation_rows)
+        lines.extend(["\\bottomrule", "\\end{tabular}", "}%"])
+    else:
+        lines.extend(
+            [
+                "\\par\\vspace{0.6em}",
+                "\\footnotesize Multisource semantic validation is generated by \\texttt{python reproduce\\_full.py}.",
+            ]
+        )
+    lines.extend(["\\end{table}", ""])
     (TABLES / "table_semantic_validation.tex").write_text("\n".join(lines), encoding="utf-8")
 
 

@@ -952,7 +952,7 @@ def plot_subject_paired_rho(trial_fits: pd.DataFrame, destination: Path) -> None
         axis.spines["right"].set_visible(False)
         axis.tick_params(axis="both", labelsize=9.5)
 
-    fig.tight_layout()
+    fig.subplots_adjust(left=0.12, right=0.98, bottom=0.16, top=0.94, wspace=0.34)
     fig.savefig(destination, dpi=300, bbox_inches="tight")
     fig.savefig(destination.with_suffix(".pdf"), bbox_inches="tight")
     plt.close(fig)

@@ -35,10 +35,18 @@ The main predictive comparison is subject-wise cross-validated trajectory RMSE a
 
 ```powershell
 python -m pip install -r requirements.txt
-python reproduce_all.py
+python reproduce_core.py
 ```
 
-`python reproduce_all.py` regenerates figures, tables, summaries, validation outputs, and `outputs/reproducibility_summary.json`.
+`python reproduce_core.py` regenerates the core manuscript analysis, figures, generated tables, summaries, and `outputs/reproducibility_summary.json`. `python reproduce_all.py` is kept as a compatibility alias for this fast core run.
+
+For the slower secondary validation suite, run:
+
+```powershell
+python reproduce_full.py
+```
+
+`python reproduce_full.py` runs the core reproduction first, then adds sensitivity analyses, permutation checks, mixed-effects validation, secondary semantic predictors, multisource semantic validation, and supplementary validation tables.
 
 ## Submission outputs
 
@@ -47,6 +55,7 @@ python reproduce_all.py
 - `highlights.tex`
 - `figures/*.png`
 - `figures/decisive_four_panel.pdf`
+- `figures/rho_subject_paired.pdf`
 - `outputs/tables/*.tex`
 - `outputs/reproducibility_summary.json`
 - `outputs/semantic_scores_19_items.csv`
